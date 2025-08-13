@@ -65,7 +65,12 @@
   // Determine if we are on the Home page (root index.html)
   function isHomePage() {
     const path = window.location.pathname || '';
-    return /(?:^|\/)index\.html$/.test(path) || path === '/' || path === '';
+    // Treat explicit index.html as home
+    if (/(?:^|\/)index\.html$/i.test(path)) return true;
+    // If there's no file extension and the path ends with a slash, it's a directory index (home when served from a subpath)
+    if (!/\.[a-zA-Z0-9]+$/.test(path) && path.endsWith('/')) return true;
+    // Fallbacks for very short/empty paths
+    return path === '/' || path === '';
   }
 
   // Add a class to <html> for page-context-specific styling
