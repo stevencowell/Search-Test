@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Task 1 – White-Card Hybrid Tutorial</title>
+
+<!-- Tailwind for quick styling -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+  body { background:#f3f4f6; font-family:system-ui,Roboto,sans-serif; }
+  .card{ max-width:80rem; margin:auto; background:#fff; border-radius:12px;
+         box-shadow:0 8px 24px rgba(0,0,0,.07); overflow:hidden; }
+  .btn { padding:.45rem 1rem; font-weight:600; border-radius:6px; transition:.2s; }
+  .btn-blue { background:#2563eb; color:#fff; }
+  .btn-blue:hover { background:#1e40e9; }
+  .btn-grey { background:#6b7280; color:#fff; }
+  .btn-grey:hover { background:#4b5563; }
+  .btn[disabled] { background:#cbd5e1 !important; cursor:not-allowed; }
+  .progress-bg { height:6px; background:#e5e7eb; border-radius:3px; }
+  .progress-fill { height:100%; background:#2563eb; width:0; transition:width .3s; }
+  .teach li::marker  { content:"• "; }
+  .method li::marker { content:"• "; }
+</style>
+</head>
+<body class="p-4">
+
+<!-- ─ Frame ─ -->
+<div class="card">
+  <div class="p-8" id="panel"></div>
+
+  <!-- nav & progress -->
+  <div class="bg-slate-50 border-t px-8 py-4 flex flex-col gap-4">
+    <div class="flex justify-between items-center">
+      <button id="prev" class="btn btn-grey">Prev</button>
+      <div class="font-semibold text-blue-700">Topic <span id="now"></span>/<span id="tot"></span></div>
+      <button id="next" class="btn btn-blue">Next</button>
+    </div>
+    <div class="progress-bg"><div id="bar" class="progress-fill"></div></div>
+  </div>
+</div>
+
+<!-- ─ Data ─ -->
+<script type="application/json" id="data">
+[
+  {
+    "title": "Module 1 – Knowing the Rules Before You Enter the Site",
+    "scenario": "<strong>Scenario:</strong> You arrive for your first day. The foreman asks if you’ve read and signed the WHS policy. You’re not sure what that means.",
+    "teach": [
+      "The <strong>WHS Act 2011</strong> is the core legislation.",
+      "A PCBU (Person Conducting a Business or Undertaking) holds overall duty of care.",
+      "Workers must follow policies and report unsafe work.",
+      "SafeWork NSW enforces the Act with notices or shutdowns."
+    ],
+    "method": [
+      "Locate and read the site WHS policy.",
+      "Identify the WHS representative & first-aid officer.",
+      "Sign the SWMS/JSA before starting tasks.",
+      "Ask questions—silence doesn’t remove liability."
+    ],
+    "tip": "Find the WHS folder at every induction and read it <em>before</em> touching a tool.",
+    "qs": [
+      { "q": "Give one PCBU responsibility.",                  "a": "Provide safe systems of work and supervision." },
+      { "q": "Who enforces WHS law in NSW?",                   "a": "SafeWork NSW." }
+    ],
+    "stretch": { "q": "Why is “reasonably practicable” a useful legal test?", "a": "It balances risk, severity and cost when deciding controls." }
+  },
+  {
+    "title": "Module 2 – Spotting Hazards Before They Hurt You",
+    "scenario": "<strong>Scenario:</strong> You’re asked to cut timber on a mitre-saw. The guard is missing and the lead is frayed. A coworker says, “Just be careful.”",
+    "teach": [
+      "Hazard = potential harm; Risk = likelihood × severity.",
+      "Hierarchy of control: Eliminate → Substitute → Isolate → Engineer → Admin → PPE.",
+      "High-risk tasks (e.g. scaffolding &gt; 4 m) require licences."
+    ],
+    "method": [
+      "Stop and assess the hazard.",
+      "Report missing guard and unsafe lead.",
+      "Offer safer options (e.g. fit guard) or refuse until fixed.",
+      "Escalate to supervisor if nothing changes."
+    ],
+    "tip": "Sketch the hierarchy pyramid in your notebook for quick reference.",
+    "qs": [
+      { "q": "Which control level is machine guarding?", "a": "Engineering control." },
+      { "q": "Name one licence-required task.",          "a": "Operating an Elevated Work Platform (EWP)." }
+    ],
+    "stretch": { "q": "Why is PPE last in the hierarchy?", "a": "It relies on human behaviour and doesn’t remove the hazard." }
+  },
+  {
+    "title": "Module 3 – Communicating Clearly Under Pressure",
+    "scenario": "<strong>Scenario:</strong> A concrete boom swings unexpectedly—near-miss. No one records it.",
+    "teach": [
+      "Toolbox talks are for raising issues.",
+      "Near-miss reports prevent real injuries later.",
+      "Sign colours: Red = Danger, Blue = Mandatory, Yellow = Caution."
+    ],
+    "method": [
+      "Tell the supervisor and log the incident.",
+      "Enter details in the hazard register.",
+      "Review at the next toolbox talk."
+    ],
+    "tip": "Locate the hazard logbook (or app) on day one.",
+    "qs": [
+      { "q": "What colour sign means mandatory?", "a": "Blue circular sign." },
+      { "q": "Define a near-miss.",              "a": "Unplanned event with no injury but potential harm." }
+    ],
+    "stretch": { "q": "Does reporting every small issue slow work? Explain.", "a": "No—early fixes avoid bigger delays or injuries later." }
+  },
+  {
+    "title": "Module 4 – Reacting Fast When Things Go Wrong",
+    "scenario": "<strong>Scenario:</strong> A worker collapses from heat stress while cutting bricks. You are the closest person.",
+    "teach": [
+      "Use DRSABCD: Danger, Response, Send, Airway, Breathing, CPR, Defib.",
+      "Know assembly points, wardens, and first-aid kit location.",
+      "Chief Warden wears a white helmet."
+    ],
+    "method": [
+      "Check for immediate danger (moving equipment, power).",
+      "Call for help; dial 000 with site address & details.",
+      "Begin first-aid if trained, otherwise keep area clear."
+    ],
+    "tip": "Warden helmet colours: Red-fire • Green-first aid • White-chief.",
+    "qs": [
+      { "q": "First two steps of DRSABCD?",         "a": "Danger and Response." },
+      { "q": "Two key details when calling 000?",   "a": "Exact location and nature of emergency." }
+    ],
+    "stretch": { "q": "Why isolate machinery before freeing a trapped worker?", "a": "Moving parts can restart and worsen injuries." }
+  },
+  {
+    "title": "Module 5 – PPE: Inspect, Fit, Maintain",
+    "scenario": "<strong>Scenario:</strong> Your safety glasses are scratched; earmuffs loose. A coworker says, “You’ll be fine.”",
+    "teach": [
+      "Inspect PPE daily for cracks, scratches or expiry.",
+      "Fit test: snug, no gaps; adjust straps/harness.",
+      "Store PPE properly—cool, dry, undamaged."
+    ],
+    "method": [
+      "Stop work and inspect PPE before each shift.",
+      "Replace or report damaged items immediately.",
+      "Record PPE issues on the site sheet."
+    ],
+    "tip": "Expiry dates are stamped inside hard-hat shells or on earmuff cushions.",
+    "qs": [
+      { "q": "One sign a hard-hat needs replacing?", "a": "Shell is brittle, cracked or past expiry stamp." },
+      { "q": "Why aren’t fashion sunglasses acceptable?", "a": "They lack impact-rated lenses and side protection." }
+    ],
+    "stretch": { "q": "A worker refuses PPE because it’s uncomfortable. What do you do?", "a": "Explain legal duty, offer alternatives, escalate if needed." }
+  }
+]
+</script>
+
+<!-- ─ Templates ─ -->
+<template id="tpl">
+<section>
+  <h2 class="text-3xl font-bold mb-3 title"></h2>
+  <p class="scenario bg-yellow-50 p-3 rounded mb-4"></p>
+
+  <h3 class="font-semibold text-blue-700 mb-1">Why it matters</h3>
+  <ul class="teach list-disc pl-6 mb-4"></ul>
+
+  <h3 class="font-semibold text-blue-700 mb-1">Methodology</h3>
+  <ol class="method list-disc pl-6 mb-4"></ol>
+
+  <p class="tip bg-blue-50 p-3 rounded mb-4"></p>
+
+  <h3 class="font-semibold text-blue-700 mb-1">Check-ins</h3>
+  <div class="checks space-y-3 mb-4"></div>
+
+  <details class="stretch hidden">
+    <summary class="cursor-pointer text-blue-700">Stretch activity</summary>
+    <p class="stretchQ mt-2"></p>
+    <button class="btn btn-grey mt-1 reveal">Reveal</button>
+    <p class="stretchA hidden mt-2 text-green-700 bg-green-100 p-2 rounded"></p>
+  </details>
+</section>
+</template>
+
+<template id="qtpl">
+<div class="bg-indigo-50 p-3 rounded">
+  <p class="q font-medium"></p>
+  <button class="btn btn-grey mt-1 reveal">Reveal</button>
+  <p class="a hidden mt-1 text-green-700"></p>
+</div>
+</template>
+
+<!-- ─ Script ─ -->
+<script>
+const data=JSON.parse(document.getElementById('data').textContent);
+const panel=document.getElementById('panel'),
+      prev=document.getElementById('prev'),
+      next=document.getElementById('next'),
+      bar =document.getElementById('bar'),
+      now =document.getElementById('now'),
+      tot =document.getElementById('tot');
+
+let idx=0; tot.textContent=data.length;
+
+function render(){
+  const m=data[idx];
+  const f=document.importNode(document.getElementById('tpl').content,true);
+
+  f.querySelector('.title').textContent=m.title;
+  f.querySelector('.scenario').innerHTML=m.scenario;
+
+  const teach=f.querySelector('.teach');
+  m.teach.forEach(t=>{const li=document.createElement('li');li.innerHTML=t;teach.appendChild(li);});
+
+  const meth=f.querySelector('.method');
+  m.method.forEach(t=>{const li=document.createElement('li');li.textContent=t;meth.appendChild(li);});
+
+  f.querySelector('.tip').innerHTML=m.tip;
+
+  const checks=f.querySelector('.checks');
+  m.qs.forEach(o=>{
+    const q=document.importNode(document.getElementById('qtpl').content,true);
+    q.querySelector('.q').textContent=o.q;
+    q.querySelector('.a').textContent="Answer: "+o.a;
+    checks.appendChild(q);
+  });
+
+  if(m.stretch){
+    const st=f.querySelector('.stretch');
+    st.classList.remove('hidden');
+    st.querySelector('.stretchQ').textContent=m.stretch.q;
+    st.querySelector('.stretchA').textContent=m.stretch.a;
+  }
+
+  panel.innerHTML=''; panel.appendChild(f);
+  prev.disabled=idx===0;
+  next.disabled=idx===data.length-1;
+  next.textContent=idx===data.length-1?'Finish':'Next';
+  now.textContent=idx+1;
+  bar.style.width=((idx+1)/data.length*100)+'%';
+}
+
+prev.onclick=()=>{if(idx>0){idx--;render();}};
+next.onclick=()=>{if(idx<data.length-1){idx++;render();}};
+render();
+
+/* universal reveal handler */
+panel.addEventListener('click', e=>{
+  if(e.target.classList.contains('reveal')){
+    const ans=e.target.nextElementSibling;
+    if(ans) ans.classList.toggle('hidden');
+  }
+});
+</script>
+</body>
+</html>

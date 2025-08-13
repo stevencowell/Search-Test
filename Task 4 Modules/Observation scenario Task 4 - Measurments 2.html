@@ -1,0 +1,130 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Measurement Observation Scenario 2</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body {{background:#f3f5fa;font-family:system-ui,Roboto,sans-serif}}
+  .card {{max-width:72rem;margin:auto;background:#fff;border-radius:1rem;box-shadow:0 8px 24px rgba(0,0,0,.08);overflow:hidden}}
+  .btn {{padding:.55rem 1.3rem;font-weight:600;border-radius:.375rem;transition:.2s}}
+  .btn-blue {{background:#2563eb;color:#fff}}
+  .btn-blue:hover {{background:#1e40e9}}
+  .btn-grey {{background:#6b7280;color:#fff}}
+  .btn-grey:hover {{background:#4b5563}}
+  .btn[disabled] {{background:#cbd5e1!important;cursor:not-allowed}}
+  .progress-bg {{height:.5rem;background:#e2e8f0;border-radius:.375rem}}
+  .progress-fill {{height:100%;background:#2563eb;width:0;transition:width .3s}}
+  textarea {{width:100%;border:2px solid #cbd5e1;border-radius:.375rem;padding:1rem;font-size:1rem;resize:vertical}}
+  textarea:focus {{outline:none;border-color:#2563eb}}
+  .input-field {{border:2px solid #cbd5e1;transition:border-color .3s}}
+  .input-field:focus {{outline:none;border-color:#2563eb}}
+  details summary {{cursor:pointer;font-weight:600}}
+  details[open] summary svg {{transform:rotate(180deg)}}
+</style>
+</head>
+<body class="p-4">
+
+<div class="card">
+  <div class="p-8" id="panel"></div>
+  <div class="bg-slate-50 border-t border-slate-200 px-8 py-4 flex flex-col gap-4">
+    <div class="flex justify-between items-center">
+      <button id="prev" class="btn btn-grey">Previous</button>
+      <div class="font-semibold text-blue-700">
+        Lesson <span id="stepNow"></span>/<span id="stepTotal"></span>
+      </div>
+      <button id="next" class="btn btn-blue">Next</button>
+    </div>
+    <div class="progress-bg"><div id="bar" class="progress-fill"></div></div>
+  </div>
+</div>
+
+<script type="application/json" id="lessonData">[{"title": "📐 Lesson 1 – Reading a Scaled Drawing", "desc": "Learn how to pull correct dimensions from the Carry‑All Toolbox plan before you touch a tape.", "tip": "Always confirm the plan scale FIRST. One misread ratio will throw every cut‑list measurement out.", "qs": [{"q": "What does a 1:10 scale mean on a drawing?", "a": "Every 1 unit on the drawing represents 10 units in real life (e.g. 1 cm on paper = 10 cm actual)."}, {"q": "Name two symbols that show a dimension has been checked on site.", "a": "A ‘tick’ mark through the dimension line or a circled dimension on the print."}, {"q": "When reading a scale bar, where should you place your ruler’s 0 line?", "a": "Exactly on the left end of the bar – not the printed edge of the paper – to avoid margin offsets."}], "stretch": {"q": "If the drawing shows the side panel as 90 mm at 1:10 scale, what is the real‑world length?", "a": "900 mm"}}, {"title": "🛠 Lesson 2 – Choosing & Zeroing the Tool", "desc": "Pick the right measuring device and eliminate parallax and hook errors.", "tip": "‘Burn 100’ for more accuracy: hook the tape at 100 mm mark and subtract 100 from the reading.", "qs": [{"q": "Why might a steel rule give a more reliable internal measurement than a retractable tape?", "a": "It is rigid and the zero point does not flex or wander with a loose tape hook."}, {"q": "What quick check confirms your tape hook hasn’t bent out of tolerance?", "a": "Push then pull the hook against a known edge; the reading should change by exactly the hook thickness (≈1 mm)."}, {"q": "Define parallax error in the context of measuring.", "a": "An apparent shift in the reading due to viewing the scale from an angle rather than straight on."}], "stretch": {"q": "How could you correct a 0.5 mm parallax error when reading a steel rule?", "a": "Position your eye directly above the mark or use a set square perpendicular to the rule to align accurately."}}, {"title": "📏 Lesson 3 – Linear & Perimeter Calculations", "desc": "Convert plan lengths into total lineal metres for ordering trim, edging or formwork.", "tip": "Perimeter = 2 × (L + W). Write it down before punching numbers into the calculator – reduces transposition errors.", "qs": [{"q": "Calculate the perimeter of a board that is 1200 mm long and 600 mm wide.", "a": "2 × (1200 + 600) = 3600 mm (3.6 m)."}, {"q": "A desk skirt requires a 5 % waste allowance. If the raw perimeter is 4.00 m, what length should you order?", "a": "4.00 m × 1.05 = 4.20 m (order 4.2 m or the next full stock length)."}, {"q": "Why is it bad practice to measure successive studs by ‘leap‑frogging’ the tape rather than referencing the plan?", "a": "Small errors accumulate (stacking tolerance) leading to a frame that is out of square."}], "stretch": {"q": "Three benches each have a perimeter of 2.8 m. Trim comes in 2.4 m lengths. How many lengths do you need, including 10 % waste?", "a": "Total lineal = 8.4 m; +10 % = 9.24 m → 9.24/2.4 = 3.85 so order 4 lengths."}}, {"title": "📐 Lesson 4 – Area, Volume & Waste Factors", "desc": "Compute board areas, concrete volumes and add realistic waste allowances.", "tip": "Always round UP after adding waste – suppliers rarely cut fractional bags or sheets!", "qs": [{"q": "What is the area of a sheet 1.2 m by 2.4 m?", "a": "1.2 × 2.4 = 2.88 m²"}, {"q": "How many full sheets cover a floor of 14 m² allowing 5 % waste?", "a": "14 × 1.05 = 14.7 m²; 14.7 / 2.88 ≈ 5.1 so 6 sheets."}, {"q": "Calculate the volume of concrete for a footing 300 mm wide, 200 mm deep and 5.0 m long.", "a": "0.3 × 0.2 × 5.0 = 0.30 m³"}], "stretch": {"q": "Cement bags yield 0.018 m³ each. How many bags for 0.30 m³ concrete plus 5 % waste?", "a": "0.30 × 1.05 = 0.315 m³; 0.315 / 0.018 ≈ 17.5 → 18 bags."}}, {"title": "💲 Lesson 5 – Converting Quantities to Cost", "desc": "Turn your measurements into a materials + labour cost sheet.", "tip": "Double‑check supplier units (lineal metre vs sheet vs bag) before multiplying – most rookie costing errors happen here.", "qs": [{"q": "Treated pine costs $4.50 per lineal metre. What’s the cost for 26 m including waste?", "a": "$4.50 × 26 = $117.00"}, {"q": "Your crew rate is $45/hr and the task will take 6.5 hours. What labour cost goes into the estimate?", "a": "$45 × 6.5 = $292.50"}, {"q": "Why should you record both unit price and supplier name on the costing sheet?", "a": "For traceability and to quickly source updated prices in future projects."}], "stretch": {"q": "18 cement bags at $8.60 each plus 10 % GST – total cost?", "a": "18 × 8.60 = $154.80; GST = $15.48 → $170.28"}}]</script>
+
+<template id="tpl">
+<section>
+  <h2 class="text-2xl font-bold text-slate-800 mb-2 title"></h2>
+  <p class="mb-6 text-slate-600 desc"></p>
+
+  <details class="mb-6 bg-blue-50 border border-blue-200 rounded-lg">
+    <summary class="p-4 flex justify-between items-center text-blue-800">
+      <span>💡 Tutor Tip</span>
+      <svg class="w-4 h-4 transition-transform" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.25 8.29a.75.75 0 01-.02-1.08z" clip-rule="evenodd"/>
+      </svg>
+    </summary>
+    <div class="p-4 border-t border-blue-100 text-blue-900 tip"></div>
+  </details>
+
+  <div class="space-y-6 qWrap"></div>
+
+  <details class="mt-6 stretch hidden">
+    <summary class="cursor-pointer font-medium text-blue-700">Stretch Question</summary>
+    <div class="mt-3">
+      <p class="mb-2 stretchQ"></p>
+      <button class="btn btn-grey revealStretch">Reveal</button>
+      <p class="hidden mt-2 modelStretch text-green-700 bg-green-100 border-l-4 border-green-500 p-2 rounded"></p>
+    </div>
+  </details>
+</section>
+</template>
+
+<template id="qTpl">
+<div>
+  <p class="font-medium mb-1 qText"></p>
+  <input type="text" class="answer input-field w-full p-3 rounded-md text-lg mb-2" />
+  <button class="btn btn-grey reveal">Reveal</button>
+  <p class="hidden mt-2 model text-green-700 bg-green-100 border-l-4 border-green-500 p-2 rounded"></p>
+</div>
+</template>
+
+<script>
+const lessons = JSON.parse(document.getElementById('lessonData').textContent);
+const panel=document.getElementById('panel'), prev=document.getElementById('prev'),
+      next=document.getElementById('next'), bar=document.getElementById('bar'),
+      stepNow=document.getElementById('stepNow'), stepTotal=document.getElementById('stepTotal');
+let idx=0; stepTotal.textContent=lessons.length;
+
+function render(){
+  const s=lessons[idx];
+  const frag=document.importNode(document.getElementById('tpl').content,true);
+  frag.querySelector('.title').textContent=s.title;
+  frag.querySelector('.desc').textContent=s.desc;
+  frag.querySelector('.tip').textContent=s.tip;
+
+  const qWrap=frag.querySelector('.qWrap');
+  qWrap.innerHTML='';
+  s.qs.forEach(obj=>{
+    const q=document.importNode(document.getElementById('qTpl').content,true);
+    q.querySelector('.qText').textContent=obj.q;
+    const model=q.querySelector('.model');
+    model.textContent='Model: '+obj.a;
+    q.querySelector('.reveal').onclick=()=>model.classList.toggle('hidden');
+    qWrap.appendChild(q);
+  });
+
+  if(s.stretch){
+    const st=frag.querySelector('.stretch');
+    st.classList.remove('hidden');
+    st.querySelector('.stretchQ').textContent=s.stretch.q;
+    st.querySelector('.modelStretch').textContent=s.stretch.a;
+    st.querySelector('.revealStretch').onclick=e=>e.target.nextElementSibling.classList.toggle('hidden');
+  }
+
+  panel.innerHTML='';
+  panel.appendChild(frag);
+
+  prev.disabled=idx===0;
+  next.disabled=idx===lessons.length-1;
+  next.textContent=idx===lessons.length-1?'Finish':'Next';
+  stepNow.textContent=idx+1;
+  bar.style.width=((idx+1)/lessons.length*100)+'%';
+}
+prev.onclick=()=>{ if(idx>0){idx--;render();}};
+next.onclick=()=>{ if(idx<lessons.length-1){idx++;render();}};
+render();
+</script>
+</body>
+</html>

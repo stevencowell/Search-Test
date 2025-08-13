@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Task 3 – Section 2 JSA Tutorial</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body {background:#f3f5fa;font-family:system-ui,Roboto,sans-serif}
+  .card {max-width:72rem;margin:auto;background:#fff;border-radius:1rem;box-shadow:0 8px 24px rgba(0,0,0,.08);overflow:hidden}
+  .btn {padding:.55rem 1.3rem;font-weight:600;border-radius:.375rem;transition:.2s}
+  .btn-blue {background:#2563eb;color:#fff}
+  .btn-blue:hover {background:#1e40e9}
+  .btn-grey {background:#6b7280;color:#fff}
+  .btn-grey:hover {background:#4b5563}
+  .btn[disabled] {background:#cbd5e1!important;cursor:not-allowed}
+  .progress-bg {height:.5rem;background:#e2e8f0;border-radius:.375rem}
+  .progress-fill {height:100%;background:#2563eb;width:0;transition:width .3s}
+  textarea {width:100%;border:2px solid #cbd5e1;border-radius:.375rem;padding:1rem;font-size:1rem;resize:vertical}
+  textarea:focus {outline:none;border-color:#2563eb}
+  details summary {cursor:pointer;font-weight:600}
+  details[open] summary svg {transform:rotate(180deg)}
+</style>
+</head>
+<body class="p-4">
+
+<div class="card">
+  <div class="p-8" id="panel"></div>
+  <div class="bg-slate-50 border-t border-slate-200 px-8 py-4 flex flex-col gap-4">
+    <div class="flex justify-between items-center">
+      <button id="prev" class="btn btn-grey">Previous</button>
+      <div class="font-semibold text-blue-700">
+        Topic <span id="stepNow"></span>/<span id="stepTotal"></span>
+      </div>
+      <button id="next" class="btn btn-blue">Next</button>
+    </div>
+    <div class="progress-bg"><div id="bar" class="progress-fill"></div></div>
+  </div>
+</div>
+
+<!-- =========  DATA  ========= -->
+<script type="application/json" id="modulesData">
+[{"title":"📘 Module 1 – What is a JSA?","desc":"Learn the fundamentals before you start filling out the template.","tip":"A JSA is your proof that you've thought through the job, so make it clear and specific—generic phrases won’t pass audit.","qs":[{"q":"What does JSA stand for?","a":"Job Safety Analysis."},{"q":"When is a JSA required on a construction job site?","a":"When a task involves notable or unfamiliar hazards, during high-risk work, or whenever methods/site conditions change."},{"q":"Who should be involved in creating a JSA?","a":"The workers actually doing the job, plus their supervisor/teacher and any WHS reps so the analysis reflects real practice."},{"q":"Why document control measures even if everyone “knows” them?","a":"Written controls ensure common understanding, create an audit trail, and support continual improvement."}],"stretch":{"q":"How is a JSA different from a SWMS?","a":"A JSA is a task-based hazard analysis for everyday work. A SWMS is a legal requirement for high-risk construction work and sets out a step-by-step safe method to follow."}},{"title":"🛠 Module 2 – Breaking Down Work Activities","desc":"Good JSAs start by splitting the job into clear, logical steps.","tip":"Write work activities as action verbs plus the tool or outcome. Example: “Cut studs with mitre saw” not just “cutting.”","qs":[{"q":"Break the task “install a timber wall frame” into at least three logical steps.","a":"Example: 1 Measure and mark plate positions • 2 Cut plates and studs to length • 3 Nail bottom plate to floor • 4 Erect and brace frame."},{"q":"Why is it important to separate work steps in your JSA?","a":"Each step can have different hazards and controls; separating them prevents missed risks and makes controls easier to implement."}],"stretch":{"q":"Give one guideline for wording work activities clearly.","a":"Start with an action verb, include the tool/process, and keep it measurable (e.g. “Drill pilot holes with 4 mm bit”)."}},{"title":"⚠️ Module 3 – Hazards & Risk Levels","desc":"Identify credible hazards and rate the risk before applying controls.","tip":"If you struggle to imagine hazards, visualise a worst-case “what could go wrong” moment for each step.","qs":[{"q":"Task: Cutting timber with a circular saw – list two hazards.","a":"Kick-back causing laceration • Flying chips causing eye injury."},{"q":"Task: Cutting timber with a circular saw – what is the risk level *before* controls for kick-back?","a":"High (potential serious injury, likely to occur without controls)."},{"q":"Task: Mixing cement by hand – suggest one health hazard and one control.","a":"Hazard: Cement dust inhalation • Control: Wear P2 respirator and mix in ventilated area."},{"q":"Task: Lifting and carrying 4 m studs – suggest the main hazard and suitable control.","a":"Hazard: Back strain • Control: Team lift/mechanical aid and correct manual-handling technique."},{"q":"Task: Using a nail gun – what’s a primary hazard and one engineering/administrative control?","a":"Hazard: Accidental discharge causing puncture injury • Control: Sequential-trigger nail gun and keep finger off trigger until positioned."}],"stretch":{"q":"Name one environmental hazard (not personal injury) that could occur while cutting fibre-cement and the control.","a":"Hazard: Silica dust contaminating neighbouring property • Control: Wet-cutting/extraction and dust containment barrier."}},{"title":"🧯 Module 4 – Controls & Completing the JSA Table","desc":"Apply the hierarchy of controls and fill the JSA columns correctly.","tip":"Start with elimination; if that’s not possible, move down to substitution, engineering, admin, then PPE.","qs":[{"q":"Hazard: Drill bit slips while drilling – suggest the most effective control.","a":"Clamp the workpiece, use centre-punch and maintain two-hand grip to prevent wandering."},{"q":"After applying that control, what is the revised risk level?","a":"Low – the likelihood and severity are significantly reduced."},{"q":"Who is responsible for ensuring the clamp is used every time?","a":"The operator (student) performing the drilling task."},{"q":"Which document should you consult before operating the drill to confirm safe procedure?","a":"The drill's Safe Operating Procedure (SOP)."}],"stretch":{"q":"Complete a sample JSA row for “Mixing concrete in wheelbarrow” (activity, hazard, control, who).","a":"Activity: Mix concrete in wheelbarrow • Hazard: Cement dust inhalation • Control: Wear P2 respirator and dampen mix • Responsible: Mixer operator."}}]
+</script>
+
+<!-- =========  RUNTIME  ========= -->
+<template id="tpl">
+<section>
+  <h2 class="text-2xl font-bold text-slate-800 mb-2 title"></h2>
+  <p class="mb-6 text-slate-600 desc"></p>
+  <details class="mb-6 bg-blue-50 border border-blue-200 rounded-lg">
+    <summary class="p-4 flex justify-between items-center text-blue-800">
+      <span>💡 Tutor Tip</span>
+      <svg class="w-4 h-4 transition-transform" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.25 8.29a.75.75 0 01-.02-1.08z" clip-rule="evenodd"/>
+      </svg>
+    </summary>
+    <div class="p-4 border-t border-blue-100 text-blue-900 tip"></div>
+  </details>
+  <div class="space-y-6 qWrap"></div>
+  <details class="mt-6 stretch hidden">
+    <summary class="cursor-pointer font-medium text-blue-700">Stretch Question</summary>
+    <div class="mt-3">
+      <p class="mb-2 stretchQ"></p>
+      <button class="btn btn-grey revealStretch">Reveal</button>
+      <p class="hidden mt-2 modelStretch text-green-700 bg-green-100 border-l-4 border-green-500 p-2 rounded"></p>
+    </div>
+  </details>
+</section>
+</template>
+
+<template id="qTpl">
+<div>
+  <p class="font-medium mb-1 qText"></p>
+  <textarea rows="3" class="answer mb-2"></textarea>
+  <button class="btn btn-grey reveal">Reveal</button>
+  <p class="hidden mt-2 model text-green-700 bg-green-100 border-l-4 border-green-500 p-2 rounded"></p>
+</div>
+</template>
+
+<script>
+const data = JSON.parse(document.getElementById('modulesData').textContent);
+const panel=document.getElementById('panel'), prev=document.getElementById('prev'),
+      next=document.getElementById('next'), bar=document.getElementById('bar'),
+      stepNow=document.getElementById('stepNow'), stepTotal=document.getElementById('stepTotal');
+let idx=0; stepTotal.textContent=data.length;
+
+function render(){
+  const s=data[idx];
+  const frag=document.importNode(document.getElementById('tpl').content,true);
+  frag.querySelector('.title').textContent=s.title;
+  frag.querySelector('.desc').textContent=s.desc;
+  frag.querySelector('.tip').textContent=s.tip;
+
+  const qWrap=frag.querySelector('.qWrap');
+  s.qs.forEach(o=>{
+    const q=document.importNode(document.getElementById('qTpl').content,true);
+    q.querySelector('.qText').textContent=o.q;
+    const model=q.querySelector('.model'); model.textContent='Model: '+o.a;
+    q.querySelector('.reveal').onclick=()=>model.classList.toggle('hidden');
+    qWrap.appendChild(q);
+  });
+
+  if(s.stretch){
+    const st=frag.querySelector('.stretch');
+    st.classList.remove('hidden');
+    st.querySelector('.stretchQ').textContent=s.stretch.q;
+    st.querySelector('.modelStretch').textContent=s.stretch.a;
+    st.querySelector('.revealStretch').onclick=e=>e.target.nextElementSibling.classList.toggle('hidden');
+  }
+
+  panel.innerHTML='';
+  panel.appendChild(frag);
+  prev.disabled=idx===0;
+  next.disabled=idx===data.length-1;
+  next.textContent=idx===data.length-1?'Finish':'Next';
+  stepNow.textContent=idx+1;
+  bar.style.width=((idx+1)/data.length*100)+'%';
+}
+prev.onclick=()=>{if(idx>0){idx--;render();}};
+next.onclick=()=>{if(idx<data.length-1){idx++;render();}};
+render();
+</script>
+</body>
+</html>

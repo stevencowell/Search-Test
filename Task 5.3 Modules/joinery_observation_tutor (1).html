@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Joinery Observation Tutor – Deep‑Dive Edition</title>
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body{font-family:'Roboto',sans-serif;background:#eef2f9}
+    .tutor-container{max-width:90rem;margin:auto;background:#fff;border-radius:1rem;box-shadow:0 4px 20px rgba(0,0,0,.1);overflow:hidden;width:100%}
+    /* buttons */
+    .btn{padding:.5rem 1rem;border-radius:.375rem;font-weight:600;transition:background .2s;color:#fff;display:inline-block}
+    .btn-primary{background:#007bff}
+    .btn-primary:hover{background:#0056b3}
+    .btn-secondary{background:#6c757d}
+    .btn-secondary:hover{background:#5a6268}
+    .btn-disabled{background:#e9ecef!important;color:#6c757d!important;cursor:not-allowed!important}
+    /* progress */
+    .progress-bg{width:100%;height:.6rem;background:#d1d5db;border-radius:.375rem;overflow:hidden}
+    .progress-fill{height:100%;background:#007bff;width:0;transition:width .4s ease}
+    /* textarea */
+    textarea{width:100%;border:2px solid #d1d5db;border-radius:.375rem;padding:1rem;font-size:1rem;resize:vertical}
+    textarea:focus{outline:none;border-color:#007bff}
+    /* details arrow */
+    details summary{display:flex;justify-content:space-between;cursor:pointer;font-weight:500}
+    details[open] summary svg{transform:rotate(180deg)}
+    .feedback{margin-top:1rem;padding:1rem;border-left:4px solid #28a745;background:#d4edda;color:#155724;border-radius:.25rem;display:none}
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+  <div class="tutor-container">
+    <div id="content" class="p-6 sm:p-10"></div>
+    <div class="bg-gray-50 border-t border-gray-200 px-6 sm:px-10 py-6 flex flex-col gap-6">
+      <div class="flex justify-between items-center">
+        <button id="prev" class="btn btn-secondary">Previous</button>
+        <div class="text-center font-bold text-blue-600 text-lg">Step <span id="stepText"></span> of <span id="totalSteps"></span></div>
+        <button id="next" class="btn btn-primary">Next</button>
+      </div>
+      <div class="progress-bg"><div id="progBar" class="progress-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- Templates -->
+  <template id="scenarioTpl">
+    <div>
+      <h2 class="text-3xl font-bold text-gray-800 mb-4 title"></h2>
+      <p class="text-lg text-gray-700 mb-8 desc"></p>
+      <details class="mb-10 bg-gray-100 rounded-lg p-6 border border-gray-200">
+        <summary>💡 Tutor's Tip <svg class="w-5 h-5 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></summary>
+        <div class="pt-4 text-base text-gray-700 tip"></div>
+      </details>
+      <div class="space-y-12 questions"></div>
+    </div>
+  </template>
+
+  <template id="questionTpl">
+    <div>
+      <p class="font-semibold text-gray-800 mb-2 q"></p>
+      <details class="mb-3 text-sm">
+        <summary class="text-blue-600 cursor-pointer">Need a hint?</summary>
+        <div class="pt-1 text-gray-600 hint"></div>
+      </details>
+      <textarea rows="4" placeholder="Type your answer here..."></textarea>
+      <div class="mt-3 flex flex-wrap gap-3">
+        <button class="btn btn-primary check">Submit</button>
+        <button class="btn btn-secondary reveal">Reveal Model Answer</button>
+      </div>
+      <div class="feedback"></div>
+    </div>
+  </template>
+
+  <script>
+    const scenarios=[
+      {title:'1. Worksite Inspection & JSA',desc:'Complete a comprehensive Job Safety Analysis (JSA) before commencing three joinery projects (door, frame/jamb, carcass).',tip:'Follow the 5‑step JSA process: Select task → Break into steps → Identify hazards → Determine controls → Record/communicate.',qs:[{q:'List the five procedural steps of a JSA and briefly describe the purpose of each.',hint:'Refer to tip.',ans:'1) Select job – choose high‑risk task; 2) Break job into logical steps; 3) Identify hazards for each step; 4) Determine control measures using hierarchy; 5) Record JSA & brief team.'},{q:'During inspection you note an unguarded opening in the floor where ducting is being installed. Classify the hazard type and recommend one engineering and one administrative control.',hint:'Fall hazard.',ans:'Hazard: physical – fall from height. Engineering: install temporary guardrails and kickboards around opening. Administrative: include hazard in induction and mark on site map/SWMS.'},{q:'Explain how you would involve the apprentice in the JSA process to comply with consultation duties under the WHS Act.',hint:'Section 47 consultation.',ans:'Invite apprentice to hazard‑ID walk‑around, gather their input, discuss controls in toolbox talk, document their sign‑off on the JSA form.'},{q:'State two records (other than the JSA form itself) you must keep after completing the worksite hazard analysis.',hint:'Think registers.',ans:'Updated hazard register; toolbox meeting minutes; SWMS revision history.'}]},
+      {title:'2. Reading & Interpreting Machinery WHS Info',desc:'You consult operator manuals and SOPs for a panel saw, spindle moulder, and portable biscuit joiner.',tip:'Cross‑check manual safety sections with onsite SOP to identify gaps before operation.',qs:[{q:'According to AS/NZS 4024, what colour denotes an emergency stop actuator and why is colour coding critical?',hint:'Red with yellow background.',ans:'Emergency stop actuators are red on a yellow background; universal coding ensures instant recognition and rapid response in emergencies.'},{q:'Where in an operator manual would you typically find the permissible feed speed range, and what could be the consequence of exceeding it on a spindle moulder?',hint:'Specifications or Operation chapter.',ans:'Feed speed range is listed in Technical Specifications or Safe Operation section; exceeding it may cause chatter, tool overload, heat‑checking and potential cutter failure.'},{q:'SOPs require a “last‑minute risk assessment” (LMRA) before energising a machine. Outline three prompts an LMRA card might ask the operator.',hint:'Environment, PPE, mentality.',ans:'1) Are guards/functions in place and safe to operate? 2) Is required PPE correctly worn? 3) Is the work area clear of others/obstacles and am I focused (no distraction)?'}]},
+      {title:'3. Pre‑operational Checks',desc:'Perform and document pre‑start checks on tools and equipment.',tip:'Tag‑out any item failing inspection and log in the maintenance register immediately.',qs:[{q:'List four pre‑start checks specific to a pneumatic nail gun.',hint:'Air line integrity...',ans:'Check correct pressure (per manual); inspect hose for cuts; confirm safety contact tip operates; verify fastener type/length matches spec.'},{q:'Describe the lock‑out/tag‑out procedure if a table saw fails the start‑up brake test.',hint:'Isolation padlock.',ans:'Isolate power at switchboard, apply personal padlock with “Do Not Operate” tag, record defect, notify supervisor & maintenance.'},{q:'Which document would you update after tagging‑out faulty equipment and why?',hint:'Maintenance register or defect log.',ans:'Update the workshop Maintenance Register so defects are tracked, trigger repair and provide audit trail for WHS compliance.'}]},
+      {title:'4. Material & Hardware Handling',desc:'Safely move 2400×1200×32 mm MDF sheets and organise hinges, handles, and screws for the projects.',tip:'Apply the “no lift over 25 kg single‑person” rule unless mechanical aid is used.',qs:[{q:'Calculate approximate mass of one MDF sheet (density 750 kg/m³). Should it be a one‑person or two‑person lift?',hint:'Volume × density.',ans:'Volume 2.4×1.2×0.032 m = 0.092 m³; mass ≈ 69 kg → requires mechanical aid or team lift (exceeds single‑person limit).'}, {q:'Suggest an ergonomic aid to position heavy sheets on the panel saw and explain how it reduces musculoskeletal risk.',hint:'Scissor lift, roller table...',ans:'Use a scissor‑lift infeed table with roller balls; aligns sheet height to saw bed, minimises bending/torque and push force.'}, {q:'State two storage requirements to prevent corrosion of steel hinges in a humid workshop.',hint:'Packaging, environment.',ans:'Store in sealed plastic bins with silica gel; keep off concrete floor and away from coolant mist.'}]},
+      {title:'5. Component Manufacture – Multi‑panel Door',desc:'Machine stiles, rails, and panels to specification.',tip:'Maintain consistent reference face throughout milling sequence to control cumulative error.',qs:[{q:'Explain the “face‑side/face‑edge” marking system and how it prevents twist in the finished door.',hint:'Carpentry convention.',ans:'Mark one face and edge as references; always register against fences; ensures all parts share common datum, squareness preserved.'},{q:'Provide the formula to calculate final panel width allowing 4 mm expansion gap in a 5‑panel door (frame opening 800 mm).',hint:'Gap distributed over panels.',ans:'Final width = (800 – 4) / 5 = 159.2 mm per panel.'},{q:'Identify two defects that would cause a reject during visual grading of door components.',hint:'Knots, resin streaks…',ans:'Large loose knots in stile; twist >1 mm over 300 mm length.'}]},
+      {title:'6. Dry Assembly & Fit Check',desc:'Assemble components without glue to confirm fit before final bonding.',tip:'Diagonal measurement difference should not exceed 1 mm over 2 m frame for square.',qs:[{q:'Describe how to use the 3‑4‑5 method to confirm squareness of a door frame during dry fit.',hint:'Pythagorean check.',ans:'Mark 300 mm on one side, 400 mm on adjacent, diagonal should measure 500 mm; adjust until correct.'},{q:'What tolerance of gap is acceptable between mortise and tenon shoulders before glue‑up?',hint:'Less than…',ans:'≤0.2 mm; larger gaps weaken joint and may telegraph after finishing.'},{q:'How would you record issues found during dry fit to ensure they are addressed?',hint:'QC sheet.',ans:'Log in Quality Checklist with description, part ID, corrective action; attach photo for traceability.'}]},
+      {title:'7. Adhesive, Fastening & Clamping',desc:'Glue‑up procedures for door, frame, and carcass.',tip:'Follow open‑time and clamp‑time data on TDS (Technical Data Sheet).',qs:[{q:'If PVA open time is 8 minutes at 20 °C, what adjustments are required at 30 °C?',hint:'Rule: every 10 °C halves open time.',ans:'Open time reduces to ~4 min; organise clamping sequence and helpers to work faster or switch to slower‑setting adhesive.'},{q:'Give two advantages of pocket‑hole screws during carcass assembly.',hint:'Speed…',ans:'Provide mechanical hold while glue cures; allow disassembly for adjustment; hide screws on inside faces.'},{q:'What is the minimum clamp overlap onto the workpiece to avoid clamp denting?',hint:'Pad area.',ans:'At least 25 mm from edge; use clamp pads to distribute pressure.'}]},
+      {title:'8. Quality Control – Final Inspection',desc:'Inspect all three projects prior to delivery.',tip:'Use go/no‑go gauges and documented tolerance sheet.',qs:[{q:'State the acceptable bow tolerance per metre for door stiles per AS 2688.',hint:'≤…',ans:'≤1 mm bow per 1 m length.'},{q:'Describe the flashlight test for glue squeeze‑out on internal corners.',hint:'Light leak.',ans:'Shine torch behind joint; visible light indicates gap; rework required.'},{q:'Provide two cosmetic defects that would trigger re‑sanding before finishing.',hint:'Machine marks…',ans:'Burn marks from router; raised grain around mortise.'}]},
+      {title:'9. Packaging & Stacking',desc:'Prepare finished units for transport/storage.',tip:'Edge protection and equalised stacking prevents racking.',qs:[{q:'Explain why stickers of equal thickness are placed between stacked carcasses.',hint:'Airflow & load.',ans:'Ensures weight is uniformly transferred, allows airflow to equalise moisture, prevents twist.'},{q:'Recommend a packaging film or material for high‑gloss cabinet doors to prevent surface scratching.',hint:'Static‑free.',ans:'Use antistatic bubble wrap with soft tissue interleaf or foam sheet.'},{q:'What information should be on the dispatch label to align with ISO 9001 traceability?',hint:'Job no., date…',ans:'Project/job number, unit ID, finish type, dispatch date, inspector signature.'}]},
+      {title:'10. Cleanup, Maintenance & Storage',desc:'Restore workshop, dispose waste, and service tools.',tip:'Record maintenance in the asset management system to meet ISO 45001 & ISO 14001 compliance.',qs:[{q:'List three segregation categories for workshop waste and give one disposal method for each.',hint:'Timber, metal, chemicals…',ans:'Timber offcuts – biomass fuel; metal shavings – scrap recycler; solvent waste – licensed hazardous waste contractor.'},{q:'Outline the steps to clean, inspect and store a power planer after use.',hint:'Disconnect…',ans:'Disconnect from power, blow out dust, inspect blades and belt, wipe surfaces with lightly oiled rag, coil cord, store in labelled drawer.'},{q:'Which logs/registers must be updated after completing tool maintenance and how long should they be retained?',hint:'Maintenance register…',ans:'Update Asset Maintenance Register and equipment service tag; records retained minimum 5 years per WHS regs.'}]}];
+
+    const content=document.getElementById('content');
+    const prevBtn=document.getElementById('prev');
+    const nextBtn=document.getElementById('next');
+    const stepTxt=document.getElementById('stepText');
+    const totalTxt=document.getElementById('totalSteps');
+    const progBar=document.getElementById('progBar');
+    let step=0;
+    totalTxt.textContent=scenarios.length;
+
+    function render(){
+      content.innerHTML='';
+      const s=scenarios[step];
+      const tpl=document.getElementById('scenarioTpl').content.cloneNode(true);
+      tpl.querySelector('.title').textContent=s.title;
+      tpl.querySelector('.desc').textContent=s.desc;
+      tpl.querySelector('.tip').textContent=s.tip;
+      const qWrap=tpl.querySelector('.questions');
+      s.qs.forEach(item=>{
+        const q=document.getElementById('questionTpl').content.cloneNode(true);
+        q.querySelector('.q').textContent=item.q;
+        q.querySelector('.hint').textContent=item.hint;
+        const feedback=q.querySelector('.feedback');
+        const textarea=q.querySelector('textarea');
+        q.querySelector('.check').onclick=()=>{feedback.style.display='block';feedback.textContent='Answer recorded. Compare with model answer when ready.'};
+        q.querySelector('.reveal').onclick=()=>{feedback.style.display='block';feedback.textContent='Model answer: '+item.ans};
+        qWrap.appendChild(q);
+      });
+      content.appendChild(tpl);
+      updateNav();
+    }
+
+    function updateNav(){
+      prevBtn.disabled=step===0;
+      if(prevBtn.disabled){prevBtn.classList.add('btn-disabled')}else{prevBtn.classList.remove('btn-disabled')}
+      nextBtn.disabled=step===scenarios.length-1;
+      if(nextBtn.disabled){nextBtn.classList.add('btn-disabled')}else{nextBtn.classList.remove('btn-disabled')}
+      stepTxt.textContent=step+1;
+      progBar.style.width=((step+1)/scenarios.length*100)+'%';
+    }
+
+    prevBtn.onclick=()=>{if(step>0){step--;render()}};
+    nextBtn.onclick=()=>{if(step<scenarios.length-1){step++;render()}};
+
+    render();
+  </script>
+</body>
+</html>

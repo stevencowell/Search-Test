@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Task 6 – House-Plan Interpretation (Enhanced Hybrid Tutorial)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+ body{background:#f3f4f6;font-family:system-ui,Roboto,sans-serif}
+ .card{max-width:80rem;margin:auto;background:#fff;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.08);overflow:hidden}
+ .btn{padding:.45rem 1rem;font-weight:600;border-radius:6px;transition:.2s}
+ .btn-blue{background:#2563eb;color:#fff}.btn-blue:hover{background:#1e40e9}
+ .btn-grey{background:#6b7280;color:#fff}.btn-grey:hover{background:#4b5563}
+ .btn[disabled]{background:#cbd5e1!important;cursor:not-allowed}
+ .progress-bg{height:6px;background:#e5e7eb;border-radius:3px}
+ .progress-fill{height:100%;background:#2563eb;width:0;transition:width .3s}
+ .teach li::marker{content:"• "} .method li::marker{content:"• "}
+</style>
+</head>
+<body class="p-4">
+
+<div class="card">
+ <div class="p-8" id="panel"></div>
+
+ <div class="bg-slate-50 border-t px-8 py-4 flex flex-col gap-4">
+   <div class="flex justify-between items-center">
+     <button id="prev" class="btn btn-grey">Prev</button>
+     <div class="font-semibold text-blue-700">
+       Topic <span id="now"></span>/<span id="tot"></span>
+     </div>
+     <button id="next" class="btn btn-blue">Next</button>
+   </div>
+   <div class="progress-bg"><div id="bar" class="progress-fill"></div></div>
+ </div>
+</div>
+
+<!-- ───────────────────── DATA (10 modules) ───────────────────── -->
+<script type="application/json" id="data">
+[
+{
+"title":"Plan-Set Overview & Drawing Types",
+"scenario":"<strong>Scenario:</strong> Your supervisor drops a 25-sheet A3 plan pack on your desk and says, “Flick to the electrical layout.”  You realise you’re not sure *which sheet* that is.",
+"teach":[
+  "A full plan set can include <strong>site plan, floor plans, elevations, sections, details, reflected ceiling plans, electrical, hydraulic, structural, truss layout,</strong> and schedules.",
+  "Sheets are coded (e.g. A-101 Architectural Floor Plan, <em>S-302</em> Structural Beam Detail). The prefix tells the discipline; the number tells sheet + revision.",
+  "The <strong>drawing register</strong> on the cover sheet lists every sheet title, number and latest revision.",
+  "Always read the <strong>revision cloud or triangle</strong>: it marks changes since the last issue."
+],
+"method":[
+  "Open the cover sheet; locate the drawing register.",
+  "Find the discipline prefix (e.g. E for electrical). Note the sheet number.",
+  "Turn to that sheet and verify the revision matches the cover register."
+],
+"tip":"Print or bookmark the cover‐sheet register—fastest way to jump between disciplines.",
+"qs":[
+  {"q":"What does sheet “S-402” normally indicate?","a":"A structural drawing, sheet 402 (often beam/column details)."},
+  {"q":"Where do you confirm you have the latest revision?","a":"The register on the cover sheet and the revision block on each sheet."}
+],
+"stretch":{"q":"Explain why using superseded drawings can void a building warranty.","a":"Work done to old specs may not meet updated NCC or engineering requirements, leading to non-compliance and liability."}
+},
+
+{
+"title":"Module 1 – Orientation & Title Blocks",
+"scenario":"<strong>Scenario:</strong> The surveyor asks you to peg the south-east corner. You need the plan’s orientation first.",
+"teach":[
+  "The <strong>title block</strong> gives project name, address, sheet title, scale, drawing number, designer, checker and dates.",
+  "Look for the <strong>north arrow</strong> or compass rose—used to rotate the plan to real-world orientation.",
+  "Read the <strong>scale</strong> (e.g. 1:100). Check if a <em>graphic bar scale</em> is included for quick ruler-free measurements.",
+  "Find the <strong>drawing status</strong>: preliminary, construction, as-built – only “Issued for Construction” (IFC) should drive site work."
+],
+"method":[
+  "Inspect the title block on your sheet.",
+  "Highlight the scale and IFC status.",
+  "Sketch a quick site map with north arrow and note offsets from boundaries."
+],
+"tip":"Never trust a photocopied plan’s size—measure off the graphic bar scale to confirm.",
+"qs":[
+  {"q":"Why avoid working from ‘Preliminary’ issue drawings?","a":"They may change; only IFC drawings are authorised for construction."},
+  {"q":"Name two facts found in every title block.","a":"Project address and drawing scale (others: sheet title, number, designer, date)."}
+],
+"stretch":{"q":"How could an incorrect scale notation affect concrete ordering?","a":"Mis-scaled take-offs give wrong volumes—cost blow-outs or shortages."}
+},
+
+{
+"title":"Module 2 – Site Plan & Contours",
+"scenario":"<strong>Scenario:</strong> You must set out slab corners on sloping ground.",
+"teach":[
+  "A <strong>site plan</strong> shows building footprint, setbacks, easements, contour lines, services entry points, trees and north arrow.",
+  "Contour lines give ground elevation—spacing indicates slope. Each line labels RL (Reduced Level).",
+  "Services (stormwater, sewer, power) are marked with linetypes & symbols—check legend.",
+  "Setbacks are distances from boundaries: mandated by the local Development Control Plan (DCP)."
+],
+"method":[
+  "Locate contour interval in legend (e.g. 0.5 m).",
+  "Read RLs at slab corners; calculate cut/fill depths.",
+  "Mark setbacks with tape/laser from boundary pegs before excavation."
+],
+"tip":"Plot high-point RL and low-point RL to plan drainage falls early.",
+"qs":[
+  {"q":"What does RL 12.750 mean?","a":"Reduced Level 12.750 m relative to site datum."},
+  {"q":"If two contours read 12.0 m and 11.5 m and are 5 m apart on plan, what’s the slope?","a":"0.5 m drop over 5 m = 1 in 10 (10 %)."}
+],
+"stretch":{"q":"Why must you locate easements before digging foundation trenches?","a":"To avoid damaging underground services and breaching council easement rights."}
+},
+
+{
+"title":"Module 3 – Floor Plans (Deep Dive)",
+"scenario":"<strong>Scenario:</strong> You need to frame an internal wall exactly under a truss point shown on plan.",
+"teach":[
+  "Floor plans show walls, doors, windows, stairs, plumbing fixtures, cabinetry and dimension strings.",
+  "Dimension hierarchy: <em>overall</em> → <em>structural grid</em> → <em>internal partitions</em> → <em>fit-off</em>.",
+  "Grid lines (numbers/letters) form a coordinate system shared by trades (important for structural set-out).",
+  "Check <strong>finished floor level (FFL)</strong> and <strong>structural floor level (SFL)</strong>—they can differ with toppings."
+],
+"method":[
+  "Identify grid intersections; mark on slab with chalk/laser.",
+  "Transfer plan dims (scaled or read) to chalk lines.",
+  "Cross-check door/window rough openings with schedule."
+],
+"tip":"Dimension strings measure to the <em>centreline</em> or <em>face</em>—confirm convention in the plan notes.",
+"qs":[
+  {"q":"What does a dashed line inside a wall often indicate?","a":"Overhead element like a bulkhead or beam."},
+  {"q":"Why mark grid lines on the slab?","a":"They give common reference for framing, plumbing and electrical trades."}
+],
+"stretch":{"q":"Describe how to set out a non-orthogonal wall using polar coordinates from grid lines.","a":"Measure offset distance along baseline grid, then angle using digital protractor/laser; mark intersection point."}
+},
+
+{
+"title":"Module 4 – Elevations & Sections (Deep Dive)",
+"scenario":"<strong>Scenario:</strong> Order fascia boards once you know fascia height from natural ground level.",
+"teach":[
+  "Elevations list cladding type, openings, roof pitch, floor-to-floor heights, natural ground line (NGL) and finished ground line (FGL).",
+  "Sections slice the building—show slab thickness, wall build-up, ceiling heights, insulation, and footing detail call-outs.",
+  "Call-out bubbles reference detail sheets (e.g. 5/A-503 = Detail 5 on sheet A-503)."
+],
+"method":[
+  "Read wall plate RL in section; subtract NGL RL to get wall exposure height.",
+  "Note roof pitch (e.g. 25 ° or 5:12) for rafter length calc.",
+  "Follow call-out arrow to detail sheet for footing reinforcement spec."
+],
+"tip":"If floor-to-ceiling height in section differs from elevation notes, raise an RFI before ordering studs.",
+"qs":[
+  {"q":"Where do you find wall cladding type?","a":"On elevation notes keyed to legend."},
+  {"q":"A call-out 7/S-401 refers to what sheet?","a":"Structural sheet S-401, detail 7."}
+],
+"stretch":{"q":"Explain why sections are critical when floors step between wings of the house.","a":"They show differing RLs, preventing set-out errors when walls change height."}
+},
+
+{
+"title":"Module 5 – Structural & Services Drawings",
+"scenario":"<strong>Scenario:</strong> Steel beam positions must align with point loads in truss layout and plumbing penetrations.",
+"teach":[
+  "Structural drawings (prefix S-) show beams, columns, footings, reinforcement schedules.",
+  "Services drawings: <em>Hydraulic (H-)</em> for plumbing, <em>Electrical (E-)</em> for circuits, <em>Mechanical (M-)</em> for HVAC.",
+  "Each trade uses unique symbols—verify via each discipline’s legend.",
+  "Co-ordination: ensure penetrations in beams or slabs are approved by structural engineer."
+],
+"method":[
+  "Overlay structural and hydraulic PDFs onscreen to check clashes.",
+  "Mark beam set-out on slab; coordinate core holes for waste pipes.",
+  "Flag conflicts with an RFI (Request for Information)."
+],
+"tip":"Never drill or cut a beam without the engineer’s written approval.",
+"qs":[
+  {"q":"What does symbol ⌀16-@200 T&B mean?","a":"16 mm dia rebar at 200 mm centres top & bottom of slab."},
+  {"q":"Who signs off core-hole locations in a post-tension slab?","a":"The structural engineer or PT designer."}
+],
+"stretch":{"q":"Describe process to lodge RFI about an electrical conduit running through a shear wall.","a":"Document clash, reference sheet numbers, propose fix; send to designer for formal response before proceeding."}
+},
+
+{
+"title":"Module 6 – Schedules & Specifications (Expanded)",
+"scenario":"<strong>Scenario:</strong> Client changes all windows to low-E glass; schedule update needed.",
+"teach":[
+  "Schedules list repetitive elements (doors, windows, finishes) with unique codes (e.g. W05, D12).",
+  "Specifications cover materials (e.g. NCC Climate Zone insulation R-values) and workmanship standards (AS 1684 for timber framing).",
+  "Read spec clauses on tolerances, fixings, and NCC Part 3 for structural adequacy."
+],
+"method":[
+  "Update window schedule; circle code changes on elevation sheets.",
+  "Check spec clause for new glass thickness and spacer type.",
+  "Send changes to supplier with reference to revised schedule."
+],
+"tip":"Always sync schedule changes to plan mark-ups to avoid mismatch on site.",
+"qs":[
+  {"q":"What standard governs timber framing?","a":"AS 1684."},
+  {"q":"Where do you find floor-tile slip rating spec?","a":"Finishes schedule or architectural specification section 09 Finishes."}
+],
+"stretch":{"q":"Why might an aluminium window rated N3 fail in an N4 wind zone?","a":"It’s structurally under-rated; glass or frame could blow out—non-compliant with AS 2047."}
+},
+
+{
+"title":"Module 7 – NCC & Compliance",
+"scenario":"<strong>Scenario:</strong> Verandah balustrade height must meet NCC Part 3.9.2.",
+"teach":[
+  "National Construction Code (NCC) sets minimum standards (structure, fire, access).",
+  "House plans reference NCC clauses (e.g. stair rise/run, balustrade height).",
+  "AS/NZS standards (e.g. AS 1170 wind loads) referenced in structural notes.",
+  "Builders must build to NCC even if plans omit a clause—code prevails."
+],
+"method":[
+  "Check plan note for balustrade height (≥1000 mm).",
+  "Cross-verify with NCC Vol 2 Part 3.9.2.",
+  "Measure onsite; correct if framing sets rail too low."
+],
+"tip":"Keep NCC Vol 2 PDF on tablet—fast code checks avoid rework.",
+"qs":[
+  {"q":"Minimum stair tread going in NCC Vol 2?","a":"240 mm (excluding nosing)."},
+  {"q":"What NCC clause covers waterproofing of decks?","a":"Part 3.8.1 – Wet areas & external waterproofing."}
+],
+"stretch":{"q":"Describe how Bushfire Attack Level (BAL) rating changes window spec.","a":"Higher BAL needs metal screens, toughened glass and sealed gaps per AS 3959."}
+},
+
+{
+"title":"Module 8 – Work Plans, Take-Offs & RFIs",
+"scenario":"<strong>Scenario:</strong> You must hand the foreman a take-off & hazard list before frame pack arrives.",
+"teach":[
+  "A <strong>take-off</strong> is a measured list of all materials from the plan (timber lengths, sheets, fixings).",
+  "A <strong>work plan</strong> sequences tasks, labour, tools, safety controls, referencing JSA & SWMS.",
+  "An <strong>RFI</strong> formally requests clarification; include sheet reference, detail call-out, proposed solution."
+],
+"method":[
+  "Work left-to-right through plan; tally studs, plates, lintels using schedule.",
+  "Populate work-plan Gantt chart with dates & responsibilities.",
+  "Log unanswered queries in RFI register; send to designer."
+],
+"tip":"Colour-code take-off sheets (yellow for timber, blue for hardware) for fast checks with supplier.",
+"qs":[
+  {"q":"What is an SWMS?","a":"Safe Work Method Statement – high-risk activity risk control document."},
+  {"q":"Why issue an RFI instead of verbal question?","a":"Creates auditable record, avoids miscommunication, and designer’s response amends contract docs."}
+],
+"stretch":{"q":"List three items on a framing take-off that influence crane time.","a":"Beam weight/length, truss sizes, number of floor cassette packs."}
+},
+
+{
+"title":"Module 9 – Consolidated Practice Scenario",
+"scenario":"<strong>Scenario:</strong> The class receives a 4-page cottage plan set (PDF provided by teacher).  Complete the four tasks below.",
+"teach":[
+  "Task A: Mark gridline intersections on blank slab-set-out sheet.",
+  "Task B: Fill a window take-off table (codes, sizes, quantities).",
+  "Task C: Calculate cut/fill from contour RLs and propose slab datum RL.",
+  "Task D: Draft an RFI about conflicting ceiling heights between section & elevation."
+],
+"method":[
+  "Print plans at 100 % scale or view at full size onscreen with digital scale.",
+  "Use coloured pens/highlighters or PDF markup to tag each task element.",
+  "Swap with peer to cross-check answers; discuss discrepancies."
+],
+"tip":"Peer-review mimics real-world QA checks before issuing orders or RFIs.",
+"qs":[
+  {"q":"Which sheet gives you window head height?","a":"Elevation or window schedule head-height column."},
+  {"q":"What is the advantage of digital take-offs?","a":"Auto-sums quantities, links changes when plan revisions arrive."}
+],
+"stretch":{"q":"Propose a sequence of works to pour slab, frame walls and install windows with minimal weather delays.","a":"E.g. day 1: set-out & trench; day 2: pour; cure; day 4-6: frame under tarp; then wrap & install windows before roof sheet."}
+}
+]
+</script>
+
+<!-- ───────────────────── TEMPLATE ───────────────────── -->
+<template id="tpl">
+<section>
+ <h2 class="text-3xl font-bold mb-3 title"></h2>
+ <p class="scenario bg-yellow-50 p-3 rounded mb-4"></p>
+
+ <h3 class="font-semibold text-blue-700 mb-1">Why it matters</h3>
+ <ul class="teach list-disc pl-6 mb-4"></ul>
+
+ <h3 class="font-semibold text-blue-700 mb-1">Methodology</h3>
+ <ol class="method list-disc pl-6 mb-4"></ol>
+
+ <p class="tip bg-blue-50 p-3 rounded mb-4"></p>
+
+ <h3 class="font-semibold text-blue-700 mb-1">Check-ins</h3>
+ <div class="checks space-y-3 mb-4"></div>
+
+ <details class="stretch hidden">
+   <summary class="cursor-pointer text-blue-700">Stretch activity</summary>
+   <p class="stretchQ mt-2"></p>
+   <button class="btn btn-grey mt-1 reveal">Reveal</button>
+   <p class="stretchA hidden mt-2 text-green-700 bg-green-100 p-2 rounded"></p>
+ </details>
+</section>
+</template>
+
+<template id="qtpl">
+<div class="bg-indigo-50 p-3 rounded">
+ <p class="q font-medium"></p>
+ <button class="btn btn-grey mt-1 reveal">Reveal</button>
+ <p class="a hidden mt-1 text-green-700"></p>
+</div>
+</template>
+
+<!-- ───────────────────── SCRIPT ───────────────────── -->
+<script>
+const data=JSON.parse(document.getElementById('data').textContent);
+const panel=document.getElementById('panel'),prev=document.getElementById('prev'),
+      next=document.getElementById('next'),bar=document.getElementById('bar'),
+      now=document.getElementById('now'),tot=document.getElementById('tot');
+let idx=0; tot.textContent=data.length;
+
+function render(){
+ const m=data[idx];
+ const f=document.importNode(document.getElementById('tpl').content,true);
+
+ f.querySelector('.title').textContent=m.title;
+ f.querySelector('.scenario').innerHTML=m.scenario;
+
+ const teach=f.querySelector('.teach');
+ m.teach.forEach(t=>{const li=document.createElement('li');li.innerHTML=t;teach.appendChild(li);});
+
+ const meth=f.querySelector('.method');
+ m.method.forEach(t=>{const li=document.createElement('li');li.textContent=t;meth.appendChild(li);});
+
+ f.querySelector('.tip').innerHTML=m.tip;
+
+ const checks=f.querySelector('.checks');
+ m.qs.forEach(o=>{
+   const q=document.importNode(document.getElementById('qtpl').content,true);
+   q.querySelector('.q').textContent=o.q;
+   q.querySelector('.a').textContent="Answer: "+o.a;
+   checks.appendChild(q);
+ });
+
+ if(m.stretch){
+   const st=f.querySelector('.stretch');
+   st.classList.remove('hidden');
+   st.querySelector('.stretchQ').textContent=m.stretch.q;
+   st.querySelector('.stretchA').textContent=m.stretch.a;
+ }
+
+ panel.innerHTML=''; panel.appendChild(f);
+ prev.disabled=idx===0;
+ next.disabled=idx===data.length-1;
+ next.textContent=idx===data.length-1?'Finish':'Next';
+ now.textContent=idx+1;
+ bar.style.width=((idx+1)/data.length*100)+'%';
+}
+prev.onclick=()=>{if(idx>0){idx--;render();}};
+next.onclick=()=>{if(idx<data.length-1){idx++;render();}};
+render();
+
+/* delegated reveal */
+panel.addEventListener('click',e=>{
+ if(e.target.classList.contains('reveal')){
+   const ans=e.target.nextElementSibling;
+   if(ans) ans.classList.toggle('hidden');
+ }
+});
+</script>
+</body>
+</html>

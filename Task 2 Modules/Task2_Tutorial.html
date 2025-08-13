@@ -1,0 +1,209 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Task 2 Tutorial – Tools & Equipment Written Responses</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body{background:#f3f5fa;font-family:system-ui,Roboto,sans-serif}
+  .card{max-width:64rem;margin:auto;background:#fff;border-radius:1rem;
+        box-shadow:0 8px 24px rgba(0,0,0,.08);overflow:hidden}
+  .btn{padding:.55rem 1.3rem;font-weight:600;border-radius:.375rem;transition:.2s}
+  .btn-blue{background:#2563eb;color:#fff}.btn-blue:hover{background:#1e4ed8}
+  .btn-grey{background:#6b7280;color:#fff}.btn-grey:hover{background:#4b5563}
+  .btn[disabled]{background:#cbd5e1!important;cursor:not-allowed}
+  .progress-bg{height:.5rem;background:#e2e8f0;border-radius:.375rem}
+  .progress-fill{height:100%;background:#2563eb;width:0;transition:width .3s}
+  textarea{width:100%;border:2px solid #cbd5e1;border-radius:.375rem;
+           padding:1rem;font-size:1rem;resize:vertical}
+  textarea:focus{outline:none;border-color:#2563eb}
+  details summary{cursor:pointer;font-weight:600}
+  details[open] summary svg{transform:rotate(180deg)}
+</style>
+</head>
+<body class="p-4">
+
+<div class="card">
+  <!-- main panel -->
+  <div class="p-8" id="panel"></div>
+
+  <!-- nav -->
+  <div class="bg-slate-50 border-t border-slate-200 px-8 py-4 flex flex-col gap-4">
+    <div class="flex justify-between items-center">
+      <button id="prev" class="btn btn-grey">Previous</button>
+      <div class="font-semibold text-blue-700">
+        Topic <span id="stepNow"></span>/<span id="stepTotal"></span>
+      </div>
+      <button id="next" class="btn btn-blue">Next</button>
+    </div>
+    <div class="progress-bg"><div id="bar" class="progress-fill"></div></div>
+  </div>
+</div>
+
+<!-- ===== Templates ===== -->
+<template id="tpl">
+<section>
+  <h2 class="text-2xl font-bold text-slate-800 mb-2 title"></h2>
+  <p class="mb-6 text-slate-600 desc"></p>
+
+  <details class="mb-6 bg-blue-50 border border-blue-200 rounded-lg">
+    <summary class="p-4 flex justify-between items-center text-blue-800">
+      <span>💡 Tutor Tip</span>
+      <svg class="w-4 h-4 transition-transform" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.25 8.29a.75.75 0 01-.02-1.08z" clip-rule="evenodd"/>
+      </svg>
+    </summary>
+    <div class="p-4 border-t border-blue-100 text-blue-900 tip"></div>
+  </details>
+
+  <div class="space-y-6 qWrap"></div>
+
+  <details class="mt-6 stretch hidden">
+    <summary class="cursor-pointer font-medium text-blue-700">Stretch Question</summary>
+    <div class="mt-3">
+      <p class="mb-2 stretchQ"></p>
+      <button class="btn btn-grey revealStretch">Reveal</button>
+      <p class="hidden mt-2 modelStretch text-green-700 bg-green-100 border-l-4 border-green-500 p-2 rounded"></p>
+    </div>
+  </details>
+</section>
+</template>
+
+<template id="qTpl">
+<div>
+  <p class="font-medium mb-1 qText"></p>
+  <textarea rows="3" class="answer mb-2"></textarea>
+  <button class="btn btn-grey reveal">Reveal</button>
+  <p class="hidden mt-2 model text-green-700 bg-green-100 border-l-4 border-green-500 p-2 rounded"></p>
+</div>
+</template>
+
+<script>
+/* -------- Scenario Data -------- */
+const data=[
+
+{
+  title:'📏 Topic 1 – Measuring & Marking Tools',
+  desc:'You are setting out a door frame on site. Accurate measuring and marking are critical.',
+  tip:'Two minutes spent checking measurements can save two hours of re‑work. Always verify your tape measure against a reliable standard.',
+  qs:[
+    {q:'Which measuring tool provides the most accurate internal dimension when space is limited?',a:'A folding steel rule or inside calliper (where available) because the rule is rigid and does not bend like a tape.'},
+    {q:'How often should you check the calibration of your tape measure on a construction site?',a:'At the start of each project or whenever the tape is dropped, kinked or the hook shows damage.'},
+    {q:'Describe a safe way to transport and store a spirit level to avoid damage.',a:'Carry it flat or vertically so vials are not stressed; hang it on a rack or store in a padded sleeve—never throw it in a tool box with heavy items.'},
+    {q:'What limitation does a chalk line have in wet conditions and how can you overcome it?',a:'Chalk can wash off or not stick; switch to a pencil/string method or use coloured carpenters’ crayons.'},
+    {q:'If you suspect your string line is sagging, what adjustment should you make before marking?',a:'Tighten the line, re‑confirm centre marks, and use a line level to ensure true level before snapping or measuring.'},
+    {q:'Why must you read plan tolerances carefully before beginning any marking‑out?',a:'To know the acceptable deviation (e.g. ±1 mm). It guides tool choice and prevents cumulative error across the build.'}
+  ],
+  stretch:{q:'Give two methods to test a right angle without a square.',a:'(1) Apply the 3‑4‑5 rule on the components; (2) Use intersecting diagonals—if the two diagonal measurements match, the frame is square.'}
+},
+
+{
+  title:'🪚 Topic 2 – Cutting & Shaping Tools',
+  desc:'You are preparing components for a timber carry‑all. Correct use of saws, chisels and planes ensures a neat fit.',
+  tip:'Let the sharp edge do the work—forcing a dull tool is a fast track to injury and poor accuracy.',
+  qs:[
+    {q:'List two indicators that a hand saw needs sharpening or replacing.',a:'Increased effort to cut and wandering off the line; teeth appear rounded or clogged with pitch.'},
+    {q:'What PPE is essential when using a coping saw on small offcuts?',a:'Safety glasses (eye protection) and a clamp or bench‑hook to secure the work, keeping hands away from the blade.'},
+    {q:'Explain how to prevent wood tear‑out when planing end grain.',a:'Support the outfeed edge with scrap, plane with a very shallow cut and use a sharp, well‑set blade.'},
+    {q:'How should chisels be stored on site to protect both the edge and workers?',a:'Blade guards fitted and stored in a roll or rack; cutting edge turned away from walkways.'},
+    {q:'What limitation does a claw hammer have when used to drive nails near timber ends?',a:'Risk of splitting the timber due to wedge effect; pilot holes or dimple with a punch first.'},
+    {q:'Why must you periodically check the set‑out after each component is cut?',a:'To catch cumulative error early and avoid stacking tolerances that make final assembly impossible.'}
+  ],
+  stretch:{q:'Describe a situation where a coping saw is preferable to a power jigsaw.',a:'When cutting delicate curves on thin timber where tear‑out must be minimal and noise/power are restricted.'}
+},
+
+{
+  title:'🔌 Topic 3 – Power Tools & Safety',
+  desc:'You are ready to cut studs with a sliding compound mitre saw and drill clearance holes with a cordless drill.',
+  tip:'Before plugging in, complete your personal “P‑C‑A” check: Power source, Condition of tool, Accessories fitted & tight.',
+  qs:[
+    {q:'State two reasons you should perform a visual inspection of the saw’s lead and plug before use.',a:'To identify cuts or exposed wires that could cause electric shock; to check the plug pins are secure.'},
+    {q:'What additional PPE, apart from safety glasses and hearing protection, is advised when using a sliding compound saw?',a:'Dust mask (especially on treated timber) and close‑fitting clothing to avoid entanglement.'},
+    {q:'How do you secure a workpiece to minimise kick‑back on a mitre saw?',a:'Clamp it firmly against the fence, keep hands outside the marked safety zone, and allow blade to reach full speed.'},
+    {q:'Your cordless drill’s chuck key is missing. Is it safe to keep using the drill with a loose bit? Why/why not?',a:'No. A loose bit can slip or fly out, causing damage or injury; secure it with the correct key or a keyless chuck.'},
+    {q:'Describe the correct procedure for changing a router bit.',a:'Isolate power, lock spindle, use two spanners (or spindle lock and spanner), tighten to firm but not over‑tight, double‑check collet engagement.'},
+    {q:'What documentation must be updated if you tag‑out a faulty RCD lead?',a:'Complete the site fault log and, where required, update the electrical equipment register with date, fault description and your name.'}
+  ],
+  stretch:{q:'When might you choose a laminate trimmer over a full‑size router?',a:'For light edge‑profiling, laminate flush‑trimming or when working overhead, where lighter weight improves control.'}
+},
+
+{
+  title:'📦 Topic 4 – Material Handling & WHS Documentation',
+  desc:'Your team is unloading treated pine, cement bags and paint tins ready for the next stage of the build.',
+  tip:'Right material, right place, right posture—safe handling begins with planning the path before lifting.',
+  qs:[
+    {q:'Which manual‑handling technique helps protect your back when lifting a 20 kg cement bag?',a:'Bend knees, keep back straight, load close to body, lift smoothly with leg muscles.'},
+    {q:'Where can you find first‑aid instructions specific to a solvent‑based paint spill?',a:'In the paint’s Safety Data Sheet (SDS) under Section 4.'},
+    {q:'List two environmental controls when cutting treated timber outdoors.',a:'Use dust extraction or wet cutting, collect shavings for appropriate disposal, and work down‑wind of others.'},
+    {q:'Why is an RCD mandatory when using corded power tools outdoors?',a:'It disconnects power quickly in case of earth leakage, reducing electric shock risk in damp conditions.'},
+    {q:'What three pieces of information are essential when completing a JSA for material unloading?',a:'Task steps, hazards for each step, and control measures with responsible person/timeframe.'},
+    {q:'Name one scenario where a powder‑based fire extinguisher is NOT suitable.',a:'Inside a confined workshop with sensitive electronics because powder residue is hard to clean and can damage equipment.'}
+  ],
+  stretch:{q:'Outline a simple hierarchy‑of‑controls approach for reducing silica dust when cutting fibre‑cement sheeting.',a:'Eliminate by ordering pre‑cut panels; substitute with low‑silica board; engineer controls like water or extraction; admin controls such as scheduling and signage; PPE—P2 respirators.'}
+}
+
+];
+
+/* -------- DOM -------- */
+const panel=document.getElementById('panel');
+const prev=document.getElementById('prev');
+const next=document.getElementById('next');
+const bar=document.getElementById('bar');
+const stepNow=document.getElementById('stepNow');
+const stepTotal=document.getElementById('stepTotal');
+
+let idx=0;stepTotal.textContent=data.length;
+
+/* -------- Render -------- */
+function render(){
+  const s=data[idx];
+  /* Base template */
+  const frag=document.importNode(document.getElementById('tpl').content,true);
+  frag.querySelector('.title').innerHTML=s.title;
+  frag.querySelector('.desc').textContent=s.desc;
+  frag.querySelector('.tip').textContent=s.tip;
+
+  /* Questions */
+  const qWrap=frag.querySelector('.qWrap');
+  s.qs.forEach(obj=>{
+    const qDiv=document.importNode(document.getElementById('qTpl').content,true);
+    qDiv.querySelector('.qText').textContent=obj.q;
+    const model=qDiv.querySelector('.model');
+    model.textContent='Model: '+obj.a;
+    qDiv.querySelector('.reveal').onclick=()=>model.classList.toggle('hidden');
+    qWrap.appendChild(qDiv);
+  });
+
+  /* Stretch (optional) */
+  if(s.stretch){
+    const st=frag.querySelector('.stretch');
+    st.classList.remove('hidden');
+    st.querySelector('.stretchQ').textContent=s.stretch.q;
+    st.querySelector('.modelStretch').textContent=s.stretch.a;
+    st.querySelector('.revealStretch').onclick=e=>{
+      e.target.nextElementSibling.classList.remove('hidden');
+    };
+  }
+
+  panel.innerHTML='';
+  panel.appendChild(frag);
+
+  /* Nav status */
+  prev.disabled=idx===0;
+  next.disabled=idx===data.length-1;
+  next.textContent=idx===data.length-1?'Finish':'Next';
+  stepNow.textContent=idx+1;
+  bar.style.width=((idx+1)/data.length*100)+'%';
+}
+
+/* -------- Events -------- */
+prev.onclick=()=>{if(idx>0){idx--;render();}};
+next.onclick=()=>{if(idx<data.length-1){idx++;render();}};
+
+/* -------- Kick off -------- */
+render();
+</script>
+</body>
+</html>

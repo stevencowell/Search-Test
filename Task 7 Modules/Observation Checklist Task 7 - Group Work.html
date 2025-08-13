@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Task 7 Observation Tutor – Group Project</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body{background:#f3f5fa;font-family:system-ui,Roboto,sans-serif}
+  .card{max-width:64rem;margin:auto;background:#fff;border-radius:1rem;
+        box-shadow:0 8px 24px rgba(0,0,0,.08);overflow:hidden}
+  .btn{padding:.55rem 1.3rem;font-weight:600;border-radius:.375rem;transition:.2s}
+  .btn-blue{background:#2563eb;color:#fff}.btn-blue:hover{background:#1e4ed8}
+  .btn-grey{background:#6b7280;color:#fff}.btn-grey:hover{background:#4b5563}
+  .btn[disabled]{background:#cbd5e1!important;cursor:not-allowed}
+  .progress-bg{height:.5rem;background:#e2e8f0;border-radius:.375rem}
+  .progress-fill{height:100%;background:#2563eb;width:0;transition:width .3s}
+  textarea{width:100%;border:2px solid #cbd5e1;border-radius:.375rem;
+           padding:1rem;font-size:1rem;resize:vertical}
+  textarea:focus{outline:none;border-color:#2563eb}
+  details summary{cursor:pointer;font-weight:600}
+  details[open] summary svg{transform:rotate(180deg)}
+</style>
+</head>
+<body class="p-4">
+
+<div class="card">
+  <!-- main panel -->
+  <div class="p-8" id="panel"></div>
+
+  <!-- nav -->
+  <div class="bg-slate-50 border-t border-slate-200 px-8 py-4 flex flex-col gap-4">
+    <div class="flex justify-between items-center">
+      <button id="prev" class="btn btn-grey">Previous</button>
+      <div class="font-semibold text-blue-700">
+        Scenario <span id="stepNow"></span>/<span id="stepTotal"></span>
+      </div>
+      <button id="next" class="btn btn-blue">Next</button>
+    </div>
+    <div class="progress-bg"><div id="bar" class="progress-fill"></div></div>
+  </div>
+</div>
+
+<!-- ===== Templates ===== -->
+<template id="tpl">
+<section>
+  <h2 class="text-2xl font-bold text-slate-800 mb-2 title"></h2>
+  <p class="mb-6 text-slate-600 desc"></p>
+
+  <details class="mb-6 bg-blue-50 border border-blue-200 rounded-lg">
+    <summary class="p-4 flex justify-between items-center text-blue-800">
+      <span>💡 Tutor Tip</span>
+      <svg class="w-4 h-4 transition-transform" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.25 8.29a.75.75 0 01-.02-1.08z" clip-rule="evenodd"/>
+      </svg>
+    </summary>
+    <div class="p-4 border-t border-blue-100 text-blue-900 tip"></div>
+  </details>
+
+  <div class="space-y-6 qWrap"></div>
+
+  <details class="mt-6 stretch hidden">
+    <summary class="cursor-pointer font-medium text-blue-700">Stretch Question</summary>
+    <div class="mt-3">
+      <p class="mb-2 stretchQ"></p>
+      <button class="btn btn-grey revealStretch">Reveal</button>
+      <p class="hidden mt-2 modelStretch text-green-700 bg-green-100 border-l-4 border-green-500 p-2 rounded"></p>
+    </div>
+  </details>
+</section>
+</template>
+
+<template id="qTpl">
+<div>
+  <p class="font-medium mb-1 qText"></p>
+  <textarea rows="3" class="answer mb-2"></textarea>
+  <button class="btn btn-grey reveal">Reveal</button>
+  <p class="hidden mt-2 model text-green-700 bg-green-100 border-l-4 border-green-500 p-2 rounded"></p>
+</div>
+</template>
+
+<script>
+/* -------- Scenario Data -------- */
+const data=[
+
+/* Scenario 1 */
+{
+  title:'🤝 Scenario 1 – Teamwork: Resolving a Tool-Sharing Problem',
+  desc:'You’re framing walls with a teammate. There’s only one nail gun and your teammate keeps using it longer than agreed. You’re behind schedule and frustration is building.',
+  tip:'Speak calmly, suggest a solution (e.g. timed turns), involve the supervisor if needed.',
+  qs:[
+    {q:'What’s a safe and respectful way to raise this issue with your teammate?',a:'Calmly ask to set clear turns or a timer; discuss privately if possible.'},
+    {q:'Who can you speak to if the issue continues after you’ve tried resolving it?',a:'The site supervisor or team leader.'},
+    {q:'Why is it important to resolve tool-sharing conflicts quickly on site?',a:'To keep the job on schedule and avoid a negative work environment.'}
+  ],
+  stretch:{q:'What could the team do differently in future to avoid tool-sharing issues?',a:'Create a sign-out roster or ensure enough tools are available before starting.'}
+},
+
+/* Scenario 2 */
+{
+  title:'⚠️ Scenario 2 – Faulty Equipment: Mitre Saw Missing Guard',
+  desc:'You discover the powered mitre saw has no guard fitted. A team member is about to use it without noticing.',
+  tip:'Tag out unsafe tools immediately, warn others, and report the hazard.',
+  qs:[
+    {q:'What should be your first action when you see the saw is unsafe?',a:'Stop its use immediately and warn nearby workers.'},
+    {q:'How would you formally report the issue, and what information should be included?',a:'Fill out a fault log or tag-out form with tool ID, description of missing guard, date, and your name.'},
+    {q:'Who is responsible for making sure unsafe tools are not used?',a:'Everyone on site, especially the user and the person who notices the fault.'}
+  ],
+  stretch:{q:'What could happen if faulty equipment is not reported?',a:'Serious injury, project delays, or legal consequences.'}
+},
+
+/* Scenario 3 */
+{
+  title:'🧱 Scenario 3 – Undertake Project Work: Line, Level & Plumb',
+  desc:'You’re assembling wall frames and must build to the specified tolerances.',
+  tip:'Measure twice, keep components line-level-plumb, verify with the plan.',
+  qs:[
+    {q:'What does “set out and erect in line, level, and plumb” mean in practical terms?',a:'Accurately position components so they are straight, horizontal/vertical, and square to the plan.'},
+    {q:'What should you do if a component is slightly out of level during the build?',a:'Re-check set-out marks, adjust carefully, and seek help if needed.'},
+    {q:'How can you check that you’ve met the required tolerances in your project?',a:'Use tape, square, or laser to compare measurements with the plan tolerances.'}
+  ],
+  stretch:{q:'Give one example of a tolerance you might check on a wall frame.',a:'Stud spacing must be within ±3 mm of 600 mm centres.'}
+},
+
+/* Scenario 4 */
+{
+  title:'🧹 Scenario 4 – Clean-Up & Tool Maintenance',
+  desc:'End of day: the workspace has timber offcuts, nails on the floor, and tools lying around.',
+  tip:'Sort reusable offcuts, bin waste safely, clean and store tools daily.',
+  qs:[
+    {q:'What materials should be sorted for reuse instead of thrown away?',a:'Clean timber offcuts and reusable hardware such as hinges or nails in good condition.'},
+    {q:'How should sharp or dangerous waste (e.g., nails, broken bits) be handled?',a:'Wear gloves and place them in designated sharp-waste or metal scrap bins.'},
+    {q:'How do you maintain and store a power drill at the end of the day?',a:'Brush off dust, check the lead, unplug, and store in its case or a secure cabinet.'}
+  ],
+  stretch:{q:'Why is it important to clean up properly even if the job isn’t finished?',a:'Reduces hazards, protects tools, and makes the next day’s work more efficient.'}
+}
+
+];
+
+/* -------- DOM -------- */
+const panel=document.getElementById('panel');
+const prev=document.getElementById('prev');
+const next=document.getElementById('next');
+const bar=document.getElementById('bar');
+const stepNow=document.getElementById('stepNow');
+const stepTotal=document.getElementById('stepTotal');
+
+let idx=0;stepTotal.textContent=data.length;
+
+/* -------- Render -------- */
+function render(){
+  const s=data[idx];
+  /* Base template */
+  const frag=document.importNode(document.getElementById('tpl').content,true);
+  frag.querySelector('.title').innerHTML=s.title;
+  frag.querySelector('.desc').textContent=s.desc;
+  frag.querySelector('.tip').textContent=s.tip;
+
+  /* Questions */
+  const qWrap=frag.querySelector('.qWrap');
+  s.qs.forEach(obj=>{
+    const qDiv=document.importNode(document.getElementById('qTpl').content,true);
+    qDiv.querySelector('.qText').textContent=obj.q;
+    const model=qDiv.querySelector('.model');
+    model.textContent='Model: '+obj.a;
+    qDiv.querySelector('.reveal').onclick=()=>model.classList.toggle('hidden');
+    qWrap.appendChild(qDiv);
+  });
+
+  /* Stretch (optional) */
+  if(s.stretch){
+    const st=frag.querySelector('.stretch');
+    st.classList.remove('hidden');
+    st.querySelector('.stretchQ').textContent=s.stretch.q;
+    st.querySelector('.modelStretch').textContent=s.stretch.a;
+    st.querySelector('.revealStretch').onclick=e=>{
+      e.target.nextElementSibling.classList.remove('hidden');
+    };
+  }
+
+  panel.innerHTML='';
+  panel.appendChild(frag);
+
+  /* Nav status */
+  prev.disabled=idx===0;
+  next.disabled=idx===data.length-1;
+  next.textContent=idx===data.length-1?'Finish':'Next';
+  stepNow.textContent=idx+1;
+  bar.style.width=((idx+1)/data.length*100)+'%';
+}
+
+/* -------- Events -------- */
+prev.onclick=()=>{if(idx>0){idx--;render();}};
+next.onclick=()=>{if(idx<data.length-1){idx++;render();}};
+
+/* -------- Kick off -------- */
+render();
+</script>
+</body>
+</html>

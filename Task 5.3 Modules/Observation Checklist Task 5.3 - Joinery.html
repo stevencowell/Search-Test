@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task 5.3 Observation Checklist Tutor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Joinery Purple -->
+    <!-- Application Structure Plan: This SPA mirrors the multi-step checklist style used in other tasks. Ten sequential parts guide the learner through each practical joinery requirement. Users check off items to unlock the next section, ensuring all observations are reviewed. -->
+    <!-- Visualization & Content Choices: Each part summarises key actions from the joinery observation scenario. A <details> element reveals a concise tip. This interactive format reinforces the workflow and safety points students must demonstrate. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f3e8ff; /* Light purple background */
+        }
+        .tutor-container {
+            background-color: #FFFFFF;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1);
+        }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+        .btn-primary {
+            background-color: #7c3aed; /* Purple-600 */
+            color: white;
+            border-color: #7c3aed;
+        }
+        .btn-primary:hover {
+            background-color: #6d28d9; /* Purple-700 */
+        }
+        .btn-secondary {
+            background-color: #6B7280;
+            color: white;
+            border-color: #6B7280;
+        }
+        .btn-secondary:hover {
+            background-color: #4B5563;
+        }
+        .btn-disabled {
+            background-color: #E5E7EB;
+            color: #9CA3AF;
+            cursor: not-allowed;
+            border-color: #D1D5DB;
+        }
+        .progress-bar-fill {
+            background-color: #7c3aed;
+            transition: width 0.5s ease-in-out;
+        }
+        .option-label {
+            display: block;
+            padding: 0.75rem 1rem;
+            border: 2px solid #D1D5DB;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-label:hover {
+            border-color: #9CA3AF;
+        }
+        .option-label.completed {
+            border-color: #10B981;
+            background-color: #D1FAE5;
+            text-decoration: line-through;
+            color: #065F46;
+        }
+        details > summary {
+            list-style: none;
+            cursor: pointer;
+        }
+        details > summary::-webkit-details-marker {
+            display: none;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div class="tutor-container w-full max-w-3xl">
+        <div class="p-6 sm:p-8" id="tutor-content">
+            <!-- Step content will be injected here -->
+        </div>
+
+        <div class="bg-gray-50 px-6 sm:px-8 py-4 border-t border-gray-200 rounded-b-2xl">
+            <div class="flex justify-between items-center mb-4">
+                <button id="prev-btn" class="btn btn-secondary">Previous</button>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-purple-700">Progress</div>
+                    <div class="text-xs text-gray-500">Part <span id="progress-text">1 of 10</span></div>
+                </div>
+                <button id="next-btn" class="btn btn-primary">Next</button>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                <div id="progress-bar" class="progress-bar-fill h-2.5 rounded-full" style="width: 10%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const steps = [
+                {
+                    title: "Part 1: Worksite Inspection & JSA",
+                    instruction: "Inspect the work area and complete a JSA for the door, frame/jamb and carcass projects.",
+                    explanation: "Follow the 5-step JSA process: select the job, break it into steps, identify hazards, determine controls and record/communicate the JSA.",
+                    checklist: [
+                        "Inspect the workspace and note hazards",
+                        "Break the job into logical steps",
+                        "Determine hazard controls with the team",
+                        "Record and communicate the JSA"
+                    ]
+                },
+                {
+                    title: "Part 2: Read Machinery WHS Information",
+                    instruction: "Review operator manuals and SOPs for the panel saw, spindle moulder and biscuit joiner.",
+                    explanation: "Cross-check manual safety sections with onsite SOPs and note emergency stop colours and feed speeds.",
+                    checklist: [
+                        "Locate emergency stop requirements",
+                        "Find permissible feed speeds",
+                        "Complete a last-minute risk assessment"
+                    ]
+                },
+                {
+                    title: "Part 3: Pre-operational Checks",
+                    instruction: "Carry out pre-start checks and tag out faulty equipment.",
+                    explanation: "Any item failing inspection must be isolated and logged in the maintenance register immediately.",
+                    checklist: [
+                        "Check nail gun pressure, hose and safety tip",
+                        "Lock-out a machine that fails the brake test",
+                        "Update the maintenance register"
+                    ]
+                },
+                {
+                    title: "Part 4: Material & Hardware Handling",
+                    instruction: "Move MDF sheets safely and organise hinges, handles and screws.",
+                    explanation: "Use mechanical aids or team lifting for heavy sheets and store hardware to prevent corrosion.",
+                    checklist: [
+                        "Calculate weight of an MDF sheet",
+                        "Use an ergonomic aid to load the panel saw",
+                        "Store steel hinges in dry sealed containers"
+                    ]
+                },
+                {
+                    title: "Part 5: Component Manufacture – Door",
+                    instruction: "Machine stiles, rails and panels to size with reference marks.",
+                    explanation: "Keep a consistent face side and face edge to control accuracy and reject defective parts.",
+                    checklist: [
+                        "Mark face side and edge on all pieces",
+                        "Calculate panel width allowing expansion",
+                        "Reject components with major defects"
+                    ]
+                },
+                {
+                    title: "Part 6: Dry Assembly & Fit Check",
+                    instruction: "Assemble components without glue to confirm fit.",
+                    explanation: "Diagonal difference should not exceed 1 mm over 2 m when checking for square.",
+                    checklist: [
+                        "Use the 3-4-5 method for squareness",
+                        "Ensure mortise and tenon gaps are \u2264 0.2 mm",
+                        "Record issues in the quality checklist"
+                    ]
+                },
+                {
+                    title: "Part 7: Adhesive, Fastening & Clamping",
+                    instruction: "Glue and fasten the assemblies following TDS open times.",
+                    explanation: "Adjust the clamping sequence if hotter temperatures reduce open time and use pads to avoid dents.",
+                    checklist: [
+                        "Adjust work for shorter open time at high temp",
+                        "Use pocket-hole screws or other fasteners correctly",
+                        "Place clamps with pads at least 25 mm from edges"
+                    ]
+                },
+                {
+                    title: "Part 8: Quality Control – Final Inspection",
+                    instruction: "Inspect finished items before delivery.",
+                    explanation: "Use documented tolerances and look for glue squeeze-out or cosmetic defects that need re-sanding.",
+                    checklist: [
+                        "Check door stiles for \u2264 1 mm bow per metre",
+                        "Perform a flashlight test for glue gaps",
+                        "Re-sand surfaces with burns or raised grain"
+                    ]
+                },
+                {
+                    title: "Part 9: Packaging & Stacking",
+                    instruction: "Prepare units for transport or storage.",
+                    explanation: "Edge protection and equalised stacking prevent racking during transport.",
+                    checklist: [
+                        "Place equal thickness stickers between carcasses",
+                        "Wrap high-gloss surfaces in anti-static material",
+                        "Label dispatch with job number and finish details"
+                    ]
+                },
+                {
+                    title: "Part 10: Cleanup, Maintenance & Storage",
+                    instruction: "Restore the workshop and service tools after work.",
+                    explanation: "Record maintenance in the asset system to meet WHS and environmental requirements.",
+                    checklist: [
+                        "Segregate timber, metal and chemical waste",
+                        "Clean and store the power planer",
+                        "Update the asset maintenance register"
+                    ]
+                }
+            ];
+
+            let currentStep = 0;
+
+            const tutorContent = document.getElementById('tutor-content');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+
+            function renderStep() {
+                const step = steps[currentStep];
+                let checklistHTML = step.checklist.map((item, index) => `
+                    <label class="option-label" for="item-${index}">
+                        <input type="checkbox" id="item-${index}" name="checklist-item" value="${index}" class="mr-3 h-5 w-5 accent-purple-600">
+                        <span class="flex-grow">${item}</span>
+                    </label>
+                `).join('');
+
+                tutorContent.innerHTML = `
+                    <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">${step.title}</h2>
+                    <p class="text-gray-600 mb-6">${step.instruction}</p>
+                    <details class="bg-gray-100 rounded-lg mb-6 border border-gray-200">
+                        <summary class="p-4 flex justify-between items-center font-semibold text-gray-700 cursor-pointer">
+                            <span>\uD83D\uDCA1 Tutor's Tip</span>
+                            <svg class="w-5 h-5 transition-transform transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </summary>
+                        <div class="p-4 border-t border-gray-200 text-sm text-gray-600">
+                            ${step.explanation}
+                        </div>
+                    </details>
+                    <div class="space-y-3">${checklistHTML}</div>
+                `;
+
+                updateUI();
+                attachEventListeners();
+            }
+
+            function updateUI() {
+                progressText.textContent = `${currentStep + 1} of ${steps.length}`;
+                progressBar.style.width = `${((currentStep + 1) / steps.length) * 100}%`;
+
+                prevBtn.disabled = currentStep === 0;
+                prevBtn.classList.toggle('btn-disabled', currentStep === 0);
+
+                const allChecked = document.querySelectorAll('input[name="checklist-item"]:checked').length === steps[currentStep].checklist.length;
+                nextBtn.disabled = !allChecked;
+                nextBtn.classList.toggle('btn-disabled', !allChecked);
+
+                if (currentStep === steps.length - 1) {
+                    nextBtn.textContent = 'Finish';
+                } else {
+                    nextBtn.textContent = 'Next';
+                }
+            }
+
+            function attachEventListeners() {
+                const checkboxes = document.querySelectorAll('input[name="checklist-item"]');
+                checkboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', () => {
+                        checkbox.parentElement.classList.toggle('completed', checkbox.checked);
+                        updateUI();
+                    });
+                });
+
+                const detailsElement = tutorContent.querySelector('details');
+                if (detailsElement) {
+                    detailsElement.addEventListener('toggle', function() {
+                        const summary = this.querySelector('summary');
+                        const arrow = summary.querySelector('svg');
+                        if (this.open) {
+                            arrow.style.transform = 'rotate(180deg)';
+                        } else {
+                            arrow.style.transform = 'rotate(0deg)';
+                        }
+                    });
+                }
+            }
+
+            prevBtn.addEventListener('click', () => {
+                if (currentStep > 0) {
+                    currentStep--;
+                    renderStep();
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                const allChecked = document.querySelectorAll('input[name="checklist-item"]:checked').length === steps[currentStep].checklist.length;
+                if (allChecked) {
+                    if (currentStep < steps.length - 1) {
+                        currentStep++;
+                        renderStep();
+                    } else {
+                        tutorContent.innerHTML = `
+                            <h2 class="text-3xl font-bold text-green-600 text-center">Task 5.3 Observations Complete!</h2>
+                            <p class="text-gray-600 text-center mt-4">You have reviewed all the joinery observation requirements. Get your teacher to sign you off on each one.</p>
+                        `;
+                        prevBtn.classList.add('btn-disabled');
+                        prevBtn.disabled = true;
+                        nextBtn.textContent = 'Done!';
+                        nextBtn.classList.add('btn-disabled');
+                        nextBtn.disabled = true;
+                    }
+                }
+            });
+
+            renderStep();
+        });
+    </script>
+</body>
+</html>

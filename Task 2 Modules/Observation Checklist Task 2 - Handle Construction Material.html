@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task 2 Observation Checklist Tutor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Workshop Amber -->
+    <!-- Application Structure Plan: This SPA is a multi-step interactive checklist designed to guide students through the five practical observation sections of Task 2. A sequential, step-by-step structure is used because the original assessment is broken into distinct parts (Manual Handling, Safety, Hand Tools, Power Tools, Maintenance). This allows students to focus on one skill set at a time. The user flow is: 1) Read the requirement for the section. 2) Review the checklist of required skills. 3) Click a "Tutor's Tip" for key safety advice. 4) Check off each skill as they practise or understand it. 5) The 'Next' button unlocks once all items are checked, ensuring they have acknowledged every requirement before proceeding. -->
+    <!-- Visualization & Content Choices: The report's 5 observation checklists are transformed into 5 sequential, interactive steps. Goal: To guide practical skill development and confirm understanding of requirements. Method: A multi-step checklist app built with HTML/CSS/JS. Interaction: The user checks boxes to track their practice. A 'Tutor's Tip' uses a <details> element for optional, expandable advice. A progress bar and navigation buttons guide the user. Justification: This interactive checklist is more engaging than a static paper list and provides a clear sense of completion. It structures the student's practice and provides just-in-time safety information. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #fefce8; /* Light yellow background */
+        }
+        .tutor-container {
+            background-color: #FFFFFF;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1);
+        }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+        .btn-primary {
+            background-color: #D97706; /* Amber-600 */
+            color: white;
+            border-color: #D97706;
+        }
+        .btn-primary:hover {
+            background-color: #B45309; /* Amber-700 */
+        }
+        .btn-secondary {
+            background-color: #6B7280;
+            color: white;
+            border-color: #6B7280;
+        }
+        .btn-secondary:hover {
+            background-color: #4B5563;
+        }
+        .btn-disabled {
+            background-color: #E5E7EB;
+            color: #9CA3AF;
+            cursor: not-allowed;
+            border-color: #D1D5DB;
+        }
+        .progress-bar-fill {
+            background-color: #D97706;
+            transition: width 0.5s ease-in-out;
+        }
+        .option-label {
+            display: block;
+            padding: 0.75rem 1rem;
+            border: 2px solid #D1D5DB;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-label:hover {
+            border-color: #9CA3AF;
+        }
+        .option-label.completed {
+            border-color: #10B981;
+            background-color: #D1FAE5;
+            text-decoration: line-through;
+            color: #065F46;
+        }
+        details > summary {
+            list-style: none;
+            cursor: pointer;
+        }
+        details > summary::-webkit-details-marker {
+            display: none;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div class="tutor-container w-full max-w-3xl">
+        <div class="p-6 sm:p-8" id="tutor-content">
+            <!-- Step content will be injected here -->
+        </div>
+
+        <div class="bg-gray-50 px-6 sm:px-8 py-4 border-t border-gray-200 rounded-b-2xl">
+            <div class="flex justify-between items-center mb-4">
+                <button id="prev-btn" class="btn btn-secondary">Previous</button>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-amber-700">Progress</div>
+                    <div class="text-xs text-gray-500">Part <span id="progress-text">1 of 5</span></div>
+                </div>
+                <button id="next-btn" class="btn btn-primary">Next</button>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                <div id="progress-bar" class="progress-bar-fill h-2.5 rounded-full" style="width: 20%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const steps = [
+                {
+                    title: "Part A: Manual Handling Materials",
+                    instruction: "For this section, you need to show you can handle materials safely and correctly. Check off each item as you practise it.",
+                    explanation: "Correct manual handling is vital to prevent back injuries. Always plan your lift, clear the path, and use your legs, not your back. For heavy or awkward items, always ask for a team lift.",
+                    checklist: [
+                        "Stack 0.5m³ of timber onto a pallet.",
+                        "Stack 0.1m³ of sheet material onto a pallet.",
+                        "Move materials safely, checking the path is clear.",
+                        "Use correct lifting technique (bend knees, straight back).",
+                        "Demonstrate a team lift with a classmate."
+                    ]
+                },
+                {
+                    title: "Part B: Working Safely",
+                    instruction: "This section is about your general safety awareness around the workshop. Check off each item to confirm you understand and can perform these actions.",
+                    explanation: "Working safely is about more than just using a tool correctly. It involves planning, checking your gear, wearing the right PPE, and keeping your workspace clean to prevent slips, trips, and falls.",
+                    checklist: [
+                        "Complete a JSA before starting a project.",
+                        "Review the SOP for a machine before use.",
+                        "Select, fit, and use correct PPE for a task.",
+                        "Keep your work area clean and tidy as you go.",
+                        "Report a (simulated) faulty tool to the teacher.",
+                        "Store tools correctly after use."
+                    ]
+                },
+                {
+                    title: "Part C: Using Hand Tools",
+                    instruction: "You need to demonstrate the safe and effective use of all the hand tools listed below over several projects. Check them off as you become confident with each one.",
+                    explanation: "Proficiency with hand tools is a core skill. Focus on using the right tool for the job, securing your workpiece with clamps, and always keeping your hands away from sharp edges.",
+                    checklist: [
+                        "Retractable Tape Measure & Steel Rule",
+                        "Builder's Square & Combination Square",
+                        "Spirit Level & Sliding Bevel",
+                        "Handsaw & Coping Saw",
+                        "Claw Hammer & Chisel",
+                        "Hand Plane & Trimming Knife",
+                        "Clamps, Shovel, Mattock & Crow Bar"
+                    ]
+                },
+                {
+                    title: "Part D: Using Power Tools",
+                    instruction: "This is a critical checklist. You must show you can safely use all the power tools listed below. Check them off as you are signed off by your teacher.",
+                    explanation: "Power tools demand respect. Always do your pre-start checks (cords, guards, blades). Wear your safety glasses and earmuffs. Let the tool get to full speed before you start cutting, and never force it.",
+                    checklist: [
+                        "Circular Saw & Sliding Compound Saw",
+                        "Jigsaw & Reciprocating Saw",
+                        "Drill & Impact Driver",
+                        "Angle Grinder & Bench Grinder",
+                        "Power Planer & Router/Laminate Trimmer",
+                        "Nail Gun & Air Compressor",
+                        "Jack Hammer & Rotary Hammer Drill"
+                    ]
+                },
+                {
+                    title: "Part E: Maintaining Tools",
+                    instruction: "The final practical skill is showing you can maintain your tools. Check off each maintenance task as you complete it under supervision.",
+                    explanation: "Well-maintained tools are safer and work better. Always unplug a tool or remove the battery before changing blades or discs. When sharpening, use the correct angles (25° for plane blades, 30° for chisels) and cool the metal often to prevent it from losing its temper.",
+                    checklist: [
+                        "Replace a blade on a circular saw.",
+                        "Replace blades in a power planer.",
+                        "Replace a cutter in a router.",
+                        "Replace a disc on an angle grinder.",
+                        "Grind and hone a hand plane blade.",
+                        "Grind and hone a chisel."
+                    ]
+                }
+            ];
+
+            let currentStep = 0;
+
+            const tutorContent = document.getElementById('tutor-content');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+
+            function renderStep() {
+                const step = steps[currentStep];
+                let checklistHTML = step.checklist.map((item, index) => `
+                    <label class="option-label" for="item-${index}">
+                        <input type="checkbox" id="item-${index}" name="checklist-item" value="${index}" class="mr-3 h-5 w-5 accent-amber-600">
+                        <span class="flex-grow">${item}</span>
+                    </label>
+                `).join('');
+
+                tutorContent.innerHTML = `
+                    <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">${step.title}</h2>
+                    <p class="text-gray-600 mb-6">${step.instruction}</p>
+                    <details class="bg-gray-100 rounded-lg mb-6 border border-gray-200">
+                        <summary class="p-4 flex justify-between items-center font-semibold text-gray-700 cursor-pointer">
+                            <span>💡 Tutor's Tip</span>
+                            <svg class="w-5 h-5 transition-transform transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </summary>
+                        <div class="p-4 border-t border-gray-200 text-sm text-gray-600">
+                            ${step.explanation}
+                        </div>
+                    </details>
+                    <div class="space-y-3">${checklistHTML}</div>
+                `;
+
+                updateUI();
+                attachEventListeners();
+            }
+
+            function updateUI() {
+                progressText.textContent = `${currentStep + 1} of ${steps.length}`;
+                progressBar.style.width = `${((currentStep + 1) / steps.length) * 100}%`;
+                
+                prevBtn.disabled = currentStep === 0;
+                prevBtn.classList.toggle('btn-disabled', currentStep === 0);
+                
+                const allChecked = document.querySelectorAll('input[name="checklist-item"]:checked').length === steps[currentStep].checklist.length;
+                nextBtn.disabled = !allChecked;
+                nextBtn.classList.toggle('btn-disabled', !allChecked);
+
+                if (currentStep === steps.length - 1) {
+                    nextBtn.textContent = 'Finish';
+                } else {
+                    nextBtn.textContent = 'Next';
+                }
+            }
+
+            function attachEventListeners() {
+                const checkboxes = document.querySelectorAll('input[name="checklist-item"]');
+                checkboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', () => {
+                        checkbox.parentElement.classList.toggle('completed', checkbox.checked);
+                        updateUI();
+                    });
+                });
+
+                const detailsElement = tutorContent.querySelector('details');
+                 if (detailsElement) {
+                    detailsElement.addEventListener('toggle', function() {
+                        const summary = this.querySelector('summary');
+                        const arrow = summary.querySelector('svg');
+                        if (this.open) {
+                            arrow.style.transform = 'rotate(180deg)';
+                        } else {
+                            arrow.style.transform = 'rotate(0deg)';
+                        }
+                    });
+                }
+            }
+            
+            prevBtn.addEventListener('click', () => {
+                if (currentStep > 0) {
+                    currentStep--;
+                    renderStep();
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                const allChecked = document.querySelectorAll('input[name="checklist-item"]:checked').length === steps[currentStep].checklist.length;
+                if (allChecked) {
+                    if (currentStep < steps.length - 1) {
+                        currentStep++;
+                        renderStep();
+                    } else {
+                        tutorContent.innerHTML = `
+                            <h2 class="text-3xl font-bold text-green-600 text-center">Task 2 Observations Complete!</h2>
+                            <p class="text-gray-600 text-center mt-4">You have reviewed all the practical observation requirements for this task. Make sure you get your teacher to sign you off on each one.</p>
+                        `;
+                        prevBtn.classList.add('btn-disabled');
+                        prevBtn.disabled = true;
+                        nextBtn.textContent = 'Done!';
+                        nextBtn.classList.add('btn-disabled');
+                        nextBtn.disabled = true;
+                    }
+                }
+            });
+
+            renderStep();
+        });
+    </script>
+</body>
+</html>

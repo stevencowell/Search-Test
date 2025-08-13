@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Task 7 – Section 1 Interactive Tutorial (11 Modules)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+ body{background:#f3f4f6;font-family:system-ui,Roboto,sans-serif}
+ .card{max-width:85rem;margin:auto;background:#fff;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.08);overflow:hidden}
+ .btn{padding:.4rem 1rem;font-weight:600;border-radius:6px;transition:.2s}
+ .btn-blue{background:#2563eb;color:#fff}.btn-blue:hover{background:#1e40e9}
+ .btn-grey{background:#6b7280;color:#fff}.btn-grey:hover{background:#4b5563}
+ .btn[disabled]{background:#cbd5e1!important;cursor:not-allowed}
+ .progress-bg{height:6px;background:#e5e7eb;border-radius:3px}
+ .progress-fill{height:100%;background:#2563eb;width:0;transition:width .3s}
+ .teach p{margin-bottom:.6rem}
+</style>
+</head>
+<body class="p-4">
+
+<div class="card">
+ <div class="p-8" id="panel"></div>
+
+ <div class="bg-slate-50 border-t px-8 py-4 flex flex-col gap-4">
+  <div class="flex justify-between items-center">
+   <button id="prev" class="btn btn-grey">Prev</button>
+   <div class="font-semibold text-blue-700">Topic <span id="now"></span>/<span id="tot"></span></div>
+   <button id="next" class="btn btn-blue">Next</button>
+  </div>
+  <div class="progress-bg"><div id="bar" class="progress-fill"></div></div>
+ </div>
+</div>
+
+<!-- ───────── MODULE DATA (exact text you supplied) ───────── -->
+<script type="application/json" id="data">
+[
+{
+"title":"Module 1 – Construction Codes, Standards & Policies",
+"scenario":"Council inspections are tomorrow, and your supervisor asks you to confirm if the newly framed wall complies with timber standards. Which document do you reference, and why?",
+"teach":[
+ "In the construction industry, three key types of documentation guide the quality, legality, and safety of every project:",
+ "• The National Construction Code (NCC) sets minimum national standards, ensuring all Australian buildings meet baseline safety and performance.",
+ "• Australian Standards (AS) provide detailed technical rules. For example, AS 1684 specifies timber framing dimensions, which are essential when planning structural elements.",
+ "• Workplace Quality Policies are internal documents created by individual companies. These policies detail company-specific quality checks, ensuring all work meets the NCC and relevant Standards.",
+ "Knowing which document applies in specific situations helps maintain compliance, safety, and efficiency on-site."
+],
+"method":[
+ "Use Australian Standards, specifically AS 1684, because it provides detailed timber-framing requirements for compliance."
+],
+"tip":"If tolerances aren’t on the drawings, check the workplace quality policy—company documents often hold exact workmanship limits.",
+"qs":[
+ {"q":"Scenario: You notice minor wall-frame tolerances aren't clearly listed on site plans. Where would you find these detailed quality standards?","a":"Workplace quality policies, as they detail exact workmanship tolerances tailored to your company's standards."},
+ {"q":"Scenario: A colleague asks why they can’t ignore a particular Australian Standard not mentioned directly in the drawings. What is your advice?","a":"If referenced by the NCC, the Standard becomes mandatory, and ignoring it would breach compliance and risk liability."}
+]
+},
+
+{
+"title":"Module 2 – Tool Identification & Safe Usage",
+"scenario":"You need to quickly secure plywood sheets onto framing, and power is unavailable. What's your best tool choice?",
+"teach":[
+ "Correct tool selection and safe usage are fundamental skills on a construction site. Tools such as hammers, drills, saws, nail guns, and generators have distinct purposes and associated hazards.",
+ "Understanding the appropriate tool for each job ensures tasks are completed safely, efficiently, and effectively, reducing the risk of injury or rework."
+],
+"method":[
+ "Use a cordless drill, as it provides portability and efficiency without mains power."
+],
+"tip":"Never substitute fastening tools for cutting tools—each is designed for a specific purpose and safety profile.",
+"qs":[
+ {"q":"Scenario: A colleague tries to trim decking boards with a jigsaw. Explain why this is inappropriate.","a":"Jigsaw are not for straight accurate cuts; a circular saw is appropriate for precise cutting tasks."},
+ {"q":"Scenario: Your generator emits smoke shortly after starting. What's your immediate action?","a":"Shut it down immediately, isolate it, and report the fault for repair—using it poses serious safety risks."}
+]
+},
+
+{
+"title":"Module 3 – Interpreting Construction Drawings & Plans",
+"scenario":"You need to check if a pergola complies with the setback distances from the boundary. Which drawing should you consult first?",
+"teach":[
+ "Accurate interpretation of various construction drawings—such as site plans, floor plans, elevations, and detail drawings—is crucial.",
+ "Each plan provides specific information necessary for construction, from boundary setbacks and heights to detailed joinery components."
+],
+"method":[
+ "Consult the site plan, as it shows precise boundary measurements and setbacks."
+],
+"tip":"Elevation drawings reveal heights; detail drawings zoom in for precise component clarity.",
+"qs":[
+ {"q":"Scenario: Your team needs the exact height of a new window installation. Where do you look?","a":"Elevation drawings, as these show vertical dimensions and heights."},
+ {"q":"Scenario: A detailed lintel joint is unclear on the main drawings. Which document provides clarity?","a":"Detail drawings, as they zoom in on specific complex construction elements with precise measurements."}
+]
+},
+
+{
+"title":"Module 4 – Specifications & Their Contents",
+"scenario":"You can't find the paint finish details on any drawings. Where should you look?",
+"teach":[
+ "Specifications accompany drawings, offering additional detailed instructions. They cover workmanship quality, materials, tolerances, finishes, and fixture specifics.",
+ "Specifications ensure clarity about project expectations, preventing miscommunication and errors."
+],
+"method":[
+ "Look in the project specifications, as they detail exact finishes and coatings."
+],
+"tip":"When drawings and specs conflict, specs usually take precedence on workmanship details.",
+"qs":[
+ {"q":"Scenario: Your apprentice asks why you’re checking tolerances from the specification instead of the drawings. How do you explain?","a":"Specifications provide detailed tolerances and are authoritative over drawings if discrepancies arise."}
+]
+},
+
+{
+"title":"Module 5 – Levels, Plumb & Measuring Tools",
+"scenario":"Which tool would you use to ensure long horizontal members are perfectly level over a 10-metre span?",
+"teach":[
+ "Builders rely on precise terms—level (horizontal), plumb (vertical), and line (straight alignment)—and accurate tools to ensure structural integrity.",
+ "Correct measurement prevents structural failure and ensures compliance with design plans."
+],
+"method":[
+ "Use a laser level or water level, suitable for accuracy over long distances."
+],
+"tip":"For quick vertical checks, spirit levels or plumb bobs remain reliable staples.",
+"qs":[
+ {"q":"Scenario: How would you quickly check if a wall frame is vertically straight?","a":"Use a spirit level or plumb bob, as both tools effectively confirm vertical alignment."}
+]
+},
+
+{
+"title":"Module 6 – Essential Construction Skills & Teamwork",
+"scenario":"A team member struggles to understand the day's tasks, causing delays. What's your best action?",
+"teach":[
+ "Effective teamwork, clear communication, planning, problem-solving, and WHS awareness are core skills required in construction.",
+ "These skills ensure that work is completed safely, efficiently, and to a high standard."
+],
+"method":[
+ "Clearly communicate tasks again, encourage questions, and confirm understanding to avoid further delays."
+],
+"tip":"When priorities clash, open communication and quick re-sequencing keep projects on track.",
+"qs":[
+ {"q":"Scenario: Two workers conflict over task priorities. What's the best method to resolve this?","a":"Hold a brief team meeting to clarify priorities, using planning and sequencing skills to find a solution."}
+]
+},
+
+{
+"title":"Module 7 – Career Pathway in Construction",
+"scenario":"Your younger cousin wants to become a carpenter. Outline the first practical step they should take.",
+"teach":[
+ "A typical career pathway includes school-based training, practical work experience, formal apprenticeships, and ongoing professional development.",
+ "Each step builds skills, confidence, and qualifications, preparing students for a successful career."
+],
+"method":[
+ "Enrol in a school-based VET construction course to gain foundational skills and a White Card."
+],
+"tip":"VET courses open doors to apprenticeships and immediate on-site experience.",
+"qs":[ ]
+},
+
+{
+"title":"Module 8 – Roles & Responsibilities in Construction",
+"scenario":"Who is responsible for providing accurate project costings before construction begins?",
+"teach":[
+ "Roles like carpenters, joiners, estimators, and construction managers have clearly defined responsibilities.",
+ "Understanding these helps teams function efficiently, with each member clear on their duties."
+],
+"method":[
+ "Building estimator, who calculates and prepares detailed project cost estimates."
+],
+"tip":"Clear knowledge of roles prevents overlap and gaps in project delivery.",
+"qs":[ ]
+},
+
+{
+"title":"Module 9 – Environmental Management & Waste Reduction",
+"scenario":"You notice timber off-cuts are frequently wasted. Suggest an immediate action to reduce this waste.",
+"teach":[
+ "Reducing environmental impact is a legal and ethical responsibility.",
+ "Proper waste management involves reducing material use, reusing or recycling waste, and safely disposing of hazardous materials."
+],
+"method":[
+ "Implement better measuring and cutting practices, using cutting plans to maximise material use and reduce waste."
+],
+"tip":"Cut-planning software or templates reduce off-cuts dramatically on repetitive jobs.",
+"qs":[ ]
+},
+
+{
+"title":"Module 10 – Manufacturing Wall Frame Components",
+"scenario":"You're about to start cutting timber but haven’t confirmed exact lengths from the plans. What's your immediate next step?",
+"teach":[
+ "Correct sequencing when manufacturing wall frames ensures quality and efficiency.",
+ "It involves carefully reading plans, measuring, marking, cutting, and checking each stage."
+],
+"method":[
+ "Stop, refer to the detailed plans, confirm measurements precisely, then proceed to cut."
+],
+"tip":"Measure twice, cut once—classic but vital.",
+"qs":[ ]
+},
+
+{
+"title":"Module 11 – Assembling Wall Frames Correctly",
+"scenario":"Your assembled frame is out of square. What's your immediate action?",
+"teach":[
+ "Wall frame assembly follows a structured process: laying components flat, fitting and nailing studs, installing noggins, and ensuring the frame is square before bracing.",
+ "Proper sequence maintains structural integrity."
+],
+"method":[
+ "Adjust diagonals by rechecking measurements, then securely brace the frame to maintain correct geometry before finalising assembly."
+],
+"tip":"Brace only after the frame is square—never lock in an error.",
+"qs":[ ]
+}
+]
+</script>
+
+<!-- ───────── TEMPLATE STRUCTURE ───────── -->
+<template id="tpl">
+<section>
+ <h2 class="text-3xl font-bold mb-3 title"></h2>
+ <p class="scenario bg-yellow-50 p-3 rounded mb-4"></p>
+
+ <h3 class="font-semibold text-blue-700 mb-1">Theory (Narrative)</h3>
+ <div class="teach mb-4"></div>
+
+ <h3 class="font-semibold text-blue-700 mb-1">Guided Response / Method</h3>
+ <ol class="method list-disc pl-6 mb-4"></ol>
+
+ <p class="tip bg-blue-50 p-3 rounded mb-4"></p>
+
+ <h3 class="font-semibold text-blue-700 mb-1">Scenario Check-in</h3>
+ <div class="checks space-y-3 mb-4"></div>
+</section>
+</template>
+
+<!-- ───────── CHECK-IN CARD ───────── -->
+<template id="qtpl">
+<div class="bg-indigo-50 p-3 rounded">
+ <p class="q font-medium"></p>
+ <button class="btn btn-grey mt-1 reveal">Reveal</button>
+ <p class="a hidden mt-1 text-green-700"></p>
+</div>
+</template>
+
+<!-- ───────── SCRIPT FOR INTERACTIVITY ───────── -->
+<script>
+const data=JSON.parse(document.getElementById('data').textContent);
+const panel=document.getElementById('panel'),prev=document.getElementById('prev'),
+      next=document.getElementById('next'),bar=document.getElementById('bar'),
+      now=document.getElementById('now'),tot=document.getElementById('tot');
+let idx=0; tot.textContent=data.length;
+
+function render(){
+ const m=data[idx];
+ const f=document.importNode(document.getElementById('tpl').content,true);
+
+ f.querySelector('.title').textContent=m.title;
+ f.querySelector('.scenario').textContent=m.scenario;
+
+ const teachBox=f.querySelector('.teach');
+ teachBox.innerHTML='';
+ m.teach.forEach(t=>{
+  const p=document.createElement('p'); p.textContent=t; teachBox.appendChild(p);
+ });
+
+ const meth=f.querySelector('.method');
+ meth.innerHTML='';
+ m.method.forEach(item=>{
+  const li=document.createElement('li'); li.textContent=item; meth.appendChild(li);
+ });
+
+ f.querySelector('.tip').textContent=m.tip;
+
+ const checks=f.querySelector('.checks');
+ checks.innerHTML='';
+ m.qs.forEach(o=>{
+  const card=document.importNode(document.getElementById('qtpl').content,true);
+  card.querySelector('.q').textContent=o.q;
+  card.querySelector('.a').textContent='Answer: '+o.a;
+  checks.appendChild(card);
+ });
+
+ panel.innerHTML=''; panel.appendChild(f);
+ prev.disabled=idx===0;
+ next.disabled=idx===data.length-1;
+ next.textContent=idx===data.length-1?'Finish':'Next';
+ now.textContent=idx+1;
+ bar.style.width=((idx+1)/data.length*100)+'%';
+}
+prev.onclick=()=>{if(idx>0){idx--;render();}};
+next.onclick=()=>{if(idx<data.length-1){idx++;render();}};
+render();
+
+panel.addEventListener('click',e=>{
+ if(e.target.classList.contains('reveal')){
+  const ans=e.target.nextElementSibling;
+  if(ans) ans.classList.toggle('hidden');
+ }
+});
+</script>
+</body>
+</html>

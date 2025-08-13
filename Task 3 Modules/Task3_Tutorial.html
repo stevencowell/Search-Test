@@ -1,0 +1,206 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Task 3 Tutorial – Work Safe (Section 1)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body{background:#f3f5fa;font-family:system-ui,Roboto,sans-serif}
+  .card{max-width:72rem;margin:auto;background:#fff;border-radius:1rem;
+        box-shadow:0 8px 24px rgba(0,0,0,.08);overflow:hidden}
+  .btn{padding:.55rem 1.3rem;font-weight:600;border-radius:.375rem;transition:.2s}
+  .btn-blue{background:#2563eb;color:#fff}.btn-blue:hover{background:#1e4ed8}
+  .btn-grey{background:#6b7280;color:#fff}.btn-grey:hover{background:#4b5563}
+  .btn[disabled]{background:#cbd5e1!important;cursor:not-allowed}
+  .progress-bg{height:.5rem;background:#e2e8f0;border-radius:.375rem}
+  .progress-fill{height:100%;background:#2563eb;width:0;transition:width .3s}
+  textarea{width:100%;border:2px solid #cbd5e1;border-radius:.375rem;
+           padding:1rem;font-size:1rem;resize:vertical}
+  textarea:focus{outline:none;border-color:#2563eb}
+  details summary{cursor:pointer;font-weight:600}
+  details[open] summary svg{transform:rotate(180deg)}
+</style>
+</head>
+<body class="p-4">
+
+<div class="card">
+  <!-- main panel -->
+  <div class="p-8" id="panel"></div>
+
+  <!-- nav -->
+  <div class="bg-slate-50 border-t border-slate-200 px-8 py-4 flex flex-col gap-4">
+    <div class="flex justify-between items-center">
+      <button id="prev" class="btn btn-grey">Previous</button>
+      <div class="font-semibold text-blue-700">
+        Topic <span id="stepNow"></span>/<span id="stepTotal"></span>
+      </div>
+      <button id="next" class="btn btn-blue">Next</button>
+    </div>
+    <div class="progress-bg"><div id="bar" class="progress-fill"></div></div>
+  </div>
+</div>
+
+<!-- ===== Templates ===== -->
+<template id="tpl">
+<section>
+  <h2 class="text-2xl font-bold text-slate-800 mb-2 title"></h2>
+  <p class="mb-6 text-slate-600 desc"></p>
+
+  <details class="mb-6 bg-blue-50 border border-blue-200 rounded-lg">
+    <summary class="p-4 flex justify-between items-center text-blue-800">
+      <span>💡 Tutor Tip</span>
+      <svg class="w-4 h-4 transition-transform" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.25 8.29a.75.75 0 01-.02-1.08z" clip-rule="evenodd"/>
+      </svg>
+    </summary>
+    <div class="p-4 border-t border-blue-100 text-blue-900 tip"></div>
+  </details>
+
+  <div class="space-y-6 qWrap"></div>
+
+  <details class="mt-6 stretch hidden">
+    <summary class="cursor-pointer font-medium text-blue-700">Stretch Question</summary>
+    <div class="mt-3">
+      <p class="mb-2 stretchQ"></p>
+      <button class="btn btn-grey revealStretch">Reveal</button>
+      <p class="hidden mt-2 modelStretch text-green-700 bg-green-100 border-l-4 border-green-500 p-2 rounded"></p>
+    </div>
+  </details>
+</section>
+</template>
+
+<template id="qTpl">
+<div>
+  <p class="font-medium mb-1 qText"></p>
+  <textarea rows="3" class="answer mb-2"></textarea>
+  <button class="btn btn-grey reveal">Reveal</button>
+  <p class="hidden mt-2 model text-green-700 bg-green-100 border-l-4 border-green-500 p-2 rounded"></p>
+</div>
+</template>
+
+<script>
+/* -------- Scenario Data -------- */
+const data=[
+{
+  title:'📚 Topic 1 – WHS Framework & Duty of Care',
+  desc:'Understand the legal foundations that keep a construction site safe.',
+  tip:'When in doubt, check: Act ➜ Regulation ➜ Code ➜ Site procedure. The higher document always takes precedence.',
+  qs:[
+    {q:'What is the primary purpose of the NSW WHS Act 2011?',a:'It sets overarching legal duties that require all duty‑holders to eliminate or, where that is not reasonably practicable, minimise risks to health and safety.'},
+    {q:'How do WHS Regulations differ from the Act?',a:'They provide detailed requirements (e.g. licensing, permits, specific control measures) that support the general duties in the Act.'},
+    {q:'What are Codes of Practice designed to do on site?',a:'Provide practical guidance on how to achieve the required standard of health and safety.'},
+    {q:'Give one example of how Australian Standards influence daily building work.',a:'They specify minimum performance or quality—e.g. timber grades for structural framing.'},
+    {q:'Why might a site create an Environmental Management Plan under ISO 14001?',a:'To control waste, runoff, noise and ensure compliance with environmental legislation.'},
+    {q:'If you see an unguarded floor opening, what immediate action should you take?',a:'Isolate or barricade the area if safe, then report to the supervisor.'},
+    {q:'List three examples of safe work practices.',a:'Conduct risk assessments, wear PPE, segregate waste.'},
+    {q:'Summarise your personal duty of care on site.',a:'Take reasonable care for your own safety and that of others, follow training and site rules.'}
+  ],
+  stretch:{q:'What duty of care does a PCBU owe workers and visitors?',a:'Provide and maintain a safe work environment, safe systems, information, training, supervision and facilities.'}
+},
+{
+  title:'⚠️ Topic 2 – Hazards, Signs & Licences',
+  desc:'Identify common hazards and understand signage and licensing requirements.',
+  tip:'Treat every near‑miss as a learning opportunity—report and correct before it escalates.',
+  qs:[
+    {q:'Which document tells you how to handle acetone safely?',a:'The product’s Safety Data Sheet (SDS).'},
+    {q:'What colour identifies a prohibition sign?',a:'Red circle with a diagonal slash over black symbol on white background.'},
+    {q:'Name three materials that may contain asbestos in pre‑1980 houses.',a:'Corrugated cement roofing, vinyl floor tiles, insulation lagging.'},
+    {q:'List four tasks that legally require a licence or high‑risk permit.',a:'Forklift operation, scaffolding >4 m, confined space entry, explosive power tool operation.'},
+    {q:'Which agency enforces workplace safety in NSW?',a:'SafeWork NSW.'},
+    {q:'Who should you notify first after giving first aid?',a:'The site First Aid Officer or supervisor.'},
+    {q:'Give two examples of near‑misses that must be reported.',a:'Falling objects missing a worker, uncontrolled vehicle movement in the work zone.'},
+    {q:'State two ways to reduce building waste.',a:'Order correct quantities, separate materials for recycling.'}
+  ],
+  stretch:{q:'Dust from cutting fibre‑cement drifts over a neighbour’s yard. Name two immediate controls.',a:'Use wet‑cutting/dust extraction and install a temporary enclosure or stop until conditions improve.'}
+},
+{
+  title:'📄 Topic 3 – Documents & Control Measures',
+  desc:'Learn how site documents and the hierarchy of controls manage risk.',
+  tip:'Always aim for elimination first—PPE is the last line of defence.',
+  qs:[
+    {q:'Describe the purpose of an SDS, SWMS and JSA.',a:'SDS – chemical info; SWMS – safe steps for high‑risk work; JSA – hazards/controls for ordinary tasks.'},
+    {q:'Manual handling timber off a truck—name one control.',a:'Use mechanical aids or team lift with proper technique.'},
+    {q:'In the hierarchy of controls, give an engineering control for sawdust.',a:'Local exhaust ventilation connected to the saw.'},
+    {q:'A machine guard is which control level?',a:'Engineering.'},
+    {q:'Give two non‑mechanical hazards in a workshop.',a:'Dust and noise; slips on spills.'},
+    {q:'Give two mechanical hazards of joinery machines.',a:'Rotating blades and pinch points.'},
+    {q:'What two documents must a student read before using unfamiliar plant?',a:'JSA and SWMS.'},
+    {q:'List five elements every JSA should contain.',a:'Steps, hazards, risk level, controls, responsible person.'}
+  ],
+  stretch:{q:'Why is a guard preferable to PPE alone for blade contact?',a:'It isolates the hazard, reducing reliance on human behaviour.'}
+},
+{
+  title:'🚑 Topic 4 – Emergencies & PPE',
+  desc:'Respond effectively to injuries, evacuations, and choose the right protective gear.',
+  tip:'Practise “DRSABCD” until it’s second nature—seconds count in emergencies.',
+  qs:[
+    {q:'Order the actions for a minor hand cut: apply pressure, report, assess, call first‑aid.',a:'Assess ➜ Apply pressure ➜ Call first‑aid ➜ Report.'},
+    {q:'Put these evacuation steps in order: leave exit, muster, raise alarm.',a:'Raise alarm ➜ Leave via exit ➜ Muster ➜ Roll‑call.'},
+    {q:'Primary use of barricade tape?',a:'To keep unauthorised people out of hazardous areas.'},
+    {q:'What hazards do lead stands help control?',a:'Trip hazards and electrical hazards from damaged cords.'},
+    {q:'Why steel‑cap boots on site?',a:'Protect toes from impact and penetration injuries.'},
+    {q:'Three hazards safety glasses protect against?',a:'Flying particles, chemical splash, dust.'},
+    {q:'When prefer ear muffs over plugs?',a:'Intermittent noise where quick fit/removal is needed.'},
+    {q:'Which respirator for fine silica dust?',a:'P2 particulate half‑face respirator.'}
+  ],
+  stretch:{q:'Name a job needing a full‑body harness and why.',a:'Roof truss installation over 3 m—fall‑arrest PPE as last resort when other controls insufficient.'}
+}
+];
+
+/* -------- DOM -------- */
+const panel=document.getElementById('panel');
+const prev=document.getElementById('prev');
+const next=document.getElementById('next');
+const bar=document.getElementById('bar');
+const stepNow=document.getElementById('stepNow');
+const stepTotal=document.getElementById('stepTotal');
+
+let idx=0;stepTotal.textContent=data.length;
+
+/* -------- Render -------- */
+function render(){
+  const s=data[idx];
+  const frag=document.importNode(document.getElementById('tpl').content,true);
+  frag.querySelector('.title').innerHTML=s.title;
+  frag.querySelector('.desc').textContent=s.desc;
+  frag.querySelector('.tip').textContent=s.tip;
+
+  const qWrap=frag.querySelector('.qWrap');
+  s.qs.forEach(o=>{
+    const qDiv=document.importNode(document.getElementById('qTpl').content,true);
+    qDiv.querySelector('.qText').textContent=o.q;
+    const model=qDiv.querySelector('.model');
+    model.textContent='Model: '+o.a;
+    qDiv.querySelector('.reveal').onclick=()=>model.classList.toggle('hidden');
+    qWrap.appendChild(qDiv);
+  });
+
+  if(s.stretch){
+    const st=frag.querySelector('.stretch');
+    st.classList.remove('hidden');
+    st.querySelector('.stretchQ').textContent=s.stretch.q;
+    st.querySelector('.modelStretch').textContent=s.stretch.a;
+    st.querySelector('.revealStretch').onclick=e=>{
+      e.target.nextElementSibling.classList.toggle('hidden');
+    };
+  }
+
+  panel.innerHTML='';
+  panel.appendChild(frag);
+
+  prev.disabled=idx===0;
+  next.disabled=idx===data.length-1;
+  next.textContent=idx===data.length-1?'Finish':'Next';
+  stepNow.textContent=idx+1;
+  bar.style.width=((idx+1)/data.length*100)+'%';
+}
+
+prev.onclick=()=>{if(idx>0){idx--;render();}};
+next.onclick=()=>{if(idx<data.length-1){idx++;render();}};
+
+render();
+</script>
+</body>
+</html>

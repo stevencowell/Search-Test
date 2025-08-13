@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Work Safe Scenario Tutor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Safety First (Red/Green/Blue) -->
+    <!-- Application Structure Plan: The SPA is structured as a sequential, multi-step interactive tutorial. This linear, step-by-step structure is the most effective pedagogical approach for teaching a series of distinct safety procedures. It guides the user through each of the 5 scenarios from Task 3 one at a time, ensuring they understand one safety protocol before moving to the next. The user flow is: 1) Read the scenario. 2) Optionally click to reveal a 'Tutor's Tip'. 3) Select the correct actions from a checklist. 4) Click 'Check My Response'. 5) Receive instant, detailed feedback explaining the correct procedures. 6) Score is updated, and the 'Next' button is unlocked. This guided, interactive format is superior for learning safety procedures. -->
+    <!-- Visualization & Content Choices: The report's 5 safety scenarios are transformed into 5 sequential, interactive steps. Goal: To teach safety procedures. Method: A multi-step tutorial built with HTML/CSS/JS. Interaction: The user selects actions from a checklist, clicks a button for JS validation, and receives dynamic feedback. A score and progress bar provide motivation. The 'Tutor's Tip' is now a standard <details> element for better accessibility and a clearer user experience. Justification: This forces active recall and decision-making in a safe, simulated environment, which is critical for learning safety protocols. The final summary provides a tangible result for submission. No charts are needed. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f5;
+        }
+        .tutor-container {
+            background-color: #FFFFFF;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08);
+        }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+        .btn-primary {
+            background-color: #3B82F6;
+            color: white;
+            border-color: #3B82F6;
+        }
+        .btn-primary:hover {
+            background-color: #2563EB;
+        }
+        .btn-secondary {
+            background-color: #6B7280;
+            color: white;
+            border-color: #6B7280;
+        }
+        .btn-secondary:hover {
+            background-color: #4B5563;
+        }
+        .btn-disabled {
+            background-color: #E5E7EB;
+            color: #9CA3AF;
+            cursor: not-allowed;
+            border-color: #D1D5DB;
+        }
+        .progress-bar-fill {
+            background-color: #3B82F6;
+            transition: width 0.5s ease-in-out;
+        }
+        .feedback {
+            border-left-width: 4px;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 0.25rem;
+        }
+        .feedback-correct {
+            background-color: #D1FAE5;
+            border-color: #10B981;
+            color: #065F46;
+        }
+        .feedback-incorrect {
+            background-color: #FEE2E2;
+            border-color: #EF4444;
+            color: #991B1B;
+        }
+        .option-label {
+            display: block;
+            padding: 0.75rem 1rem;
+            border: 2px solid #D1D5DB;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-label:hover {
+            border-color: #9CA3AF;
+        }
+        .option-label.selected {
+            border-color: #3B82F6;
+            background-color: #EFF6FF;
+        }
+        details > summary {
+            list-style: none;
+            cursor: pointer;
+        }
+        details > summary::-webkit-details-marker {
+            display: none;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div class="tutor-container w-full max-w-3xl">
+        <div class="p-6 sm:p-8" id="tutor-content">
+            <!-- Step content will be injected here -->
+        </div>
+
+        <div class="bg-gray-50 px-6 sm:px-8 py-4 border-t border-gray-200 rounded-b-2xl">
+            <div class="flex justify-between items-center mb-4">
+                <button id="prev-btn" class="btn btn-secondary">Previous</button>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-blue-600">Score: <span id="score-text">0 / 5</span></div>
+                    <div class="text-xs text-gray-500">Step <span id="progress-text">1 of 5</span></div>
+                </div>
+                <button id="next-btn" class="btn btn-primary">Next</button>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full" style="width: 20%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const steps = [
+                {
+                    title: "Scenario 1: Asbestos Hazard",
+                    problem: "You've been asked to demolish fibro sheeting from a house built in the 1970s. You suspect it might contain asbestos. What are the correct actions to take?",
+                    explanation: "The key is to stop work immediately, not use any tools that create dust (like saws or grinders), and report your concerns to your supervisor. The age of the building is the critical clue.",
+                    options: [
+                        "Start cutting the sheet carefully with a circular saw.",
+                        "Explain to your supervisor that buildings pre-1990 are likely to contain asbestos.",
+                        "Use a high-pressure water cleaner to keep the dust down.",
+                        "Immediately report your concerns to your supervisor.",
+                        "Select tools that create dust, like grinders or sanders."
+                    ],
+                    correctAnswers: [1, 3]
+                },
+                {
+                    title: "Scenario 2: Chemical Handling",
+                    problem: "You need to store a container of mineral turpentine. What is the correct procedure?",
+                    explanation: "You must always read the Safety Data Sheet (SDS) first. This tells you it's a flammable liquid and must be stored safely in a designated chemical cabinet, away from heat or ignition sources.",
+                    options: [
+                        "Read the Safety Data Sheet (SDS) for the turpentine.",
+                        "Store it next to a heat source to keep it warm.",
+                        "Explain that the 'Flammable Liquid' symbol means it's a fire risk.",
+                        "Transport it to the designated chemical storage cabinet.",
+                        "Pour it into an unmarked bottle for easier use later."
+                    ],
+                    correctAnswers: [0, 2, 3]
+                },
+                {
+                    title: "Scenario 3: Site Barricades",
+                    problem: "You are preparing the barricades and signage for a new residential build. What should you do?",
+                    explanation: "A proper construction site needs secure temporary fencing to enclose the entire area. Clear 'Danger' or 'No Entry' signage must be placed at the entry point to protect the public.",
+                    options: [
+                        "Use lightweight plastic tape to mark the boundary.",
+                        "Select proper temporary mesh fencing panels with feet and clamps.",
+                        "Place a 'Danger - Construction Site' sign at the main entry point.",
+                        "Set up the fencing to enclose the entire site.",
+                        "Assume visitors will know not to enter."
+                    ],
+                    correctAnswers: [1, 2, 3]
+                },
+                {
+                    title: "Scenario 4: Fire Emergency",
+                    problem: "A fire has started in the workshop. What are the correct steps in the emergency evacuation procedure?",
+                    explanation: "In a fire, you must alert others, leave immediately via the designated exit, and proceed directly to the assembly point for a roll call. Never go back inside.",
+                    options: [
+                        "Run to find your friends first.",
+                        "Leave calmly through the designated emergency exit.",
+                        "Report the alarm signal to your teacher/supervisor.",
+                        "Go to the designated emergency assembly point.",
+                        "Go back inside to get your phone and tools."
+                    ],
+                    correctAnswers: [1, 2, 3]
+                },
+                {
+                    title: "Scenario 5: First Aid",
+                    problem: "A classmate has a minor cut on their finger from a plane blade. What are the correct steps to take?",
+                    explanation: "For any injury, no matter how small, you should access the first aid kit, apply first aid safely (with gloves), and always report the incident to your supervisor.",
+                    options: [
+                        "Ignore it as it's only a small cut.",
+                        "Access the first aid kit and put on gloves.",
+                        "Apply a sterile dressing or band-aid to the cut.",
+                        "Wash your hands and the wound if possible.",
+                        "Report the injury and the treatment to your teacher/first aid officer."
+                    ],
+                    correctAnswers: [1, 2, 3, 4]
+                }
+            ];
+
+            let currentStep = 0;
+            let score = 0;
+            let attemptedSteps = new Array(steps.length).fill(false);
+
+            const tutorContent = document.getElementById('tutor-content');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            const scoreText = document.getElementById('score-text');
+
+            function renderStep() {
+                const step = steps[currentStep];
+                let optionsHTML = step.options.map((option, index) => `
+                    <label class="option-label" for="option-${index}">
+                        <input type="checkbox" id="option-${index}" name="option" value="${index}" class="mr-3 accent-blue-500">
+                        ${option}
+                    </label>
+                `).join('');
+
+                tutorContent.innerHTML = `
+                    <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">${step.title}</h2>
+                    <p class="text-gray-600 mb-6">${step.problem}</p>
+                    <details class="bg-gray-100 rounded-lg mb-4 border border-gray-200">
+                        <summary class="p-4 flex justify-between items-center font-semibold text-gray-700 cursor-pointer">
+                            <span>💡 Need a hint? Click for the Tutor's Tip</span>
+                            <svg class="w-5 h-5 transition-transform transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </summary>
+                        <div class="p-4 border-t border-gray-200 text-sm text-gray-600">
+                            ${step.explanation}
+                        </div>
+                    </details>
+                    <div class="space-y-3">${optionsHTML}</div>
+                    <button id="check-answer-btn" class="btn btn-primary w-full mt-6">Check My Response</button>
+                    <div id="feedback-area" class="mt-4"></div>
+                `;
+
+                updateUI();
+                attachEventListeners();
+            }
+
+            function updateUI() {
+                scoreText.textContent = `${score} / ${steps.length}`;
+                progressText.textContent = `${currentStep + 1} of ${steps.length}`;
+                progressBar.style.width = `${((currentStep + 1) / steps.length) * 100}%`;
+                
+                prevBtn.disabled = currentStep === 0;
+                prevBtn.classList.toggle('btn-disabled', currentStep === 0);
+                
+                nextBtn.disabled = !attemptedSteps[currentStep];
+                nextBtn.classList.toggle('btn-disabled', !attemptedSteps[currentStep]);
+
+                if (currentStep === steps.length - 1) {
+                    nextBtn.textContent = 'Finish & Submit';
+                } else {
+                    nextBtn.textContent = 'Next';
+                }
+            }
+
+            function attachEventListeners() {
+                const checkBtn = document.getElementById('check-answer-btn');
+                const optionLabels = document.querySelectorAll('.option-label');
+                const detailsElement = tutorContent.querySelector('details');
+
+                optionLabels.forEach(label => {
+                    label.addEventListener('click', (e) => {
+                        if (e.target.type !== 'checkbox') {
+                            const checkbox = label.querySelector('input[type="checkbox"]');
+                            checkbox.checked = !checkbox.checked;
+                        }
+                        label.classList.toggle('selected', label.querySelector('input[type="checkbox"]').checked);
+                    });
+                });
+                
+                detailsElement.addEventListener('toggle', function() {
+                    const summary = this.querySelector('summary');
+                    const arrow = summary.querySelector('svg');
+                    if (this.open) {
+                        arrow.style.transform = 'rotate(180deg)';
+                    } else {
+                        arrow.style.transform = 'rotate(0deg)';
+                    }
+                });
+
+                if (checkBtn) {
+                    checkBtn.addEventListener('click', () => {
+                        const step = steps[currentStep];
+                        const feedbackArea = document.getElementById('feedback-area');
+                        const selectedOptions = Array.from(document.querySelectorAll('input[name="option"]:checked')).map(cb => parseInt(cb.value));
+
+                        const isCorrect = selectedOptions.length === step.correctAnswers.length && selectedOptions.every(val => step.correctAnswers.includes(val));
+
+                        if (!attemptedSteps[currentStep]) {
+                            if (isCorrect) {
+                                score++;
+                            }
+                        }
+                        attemptedSteps[currentStep] = true;
+
+                        if (isCorrect) {
+                            feedbackArea.innerHTML = `<div class="feedback feedback-correct"><h5 class="font-bold">Correct!</h5><p class="mt-2">${step.feedback}</p></div>`;
+                        } else {
+                            feedbackArea.innerHTML = `<div class="feedback feedback-incorrect"><h5 class="font-bold">Not quite.</h5><p class="mt-2">${step.feedback}</p></div>`;
+                        }
+                        checkBtn.disabled = true;
+                        checkBtn.classList.add('btn-disabled');
+                        document.querySelectorAll('input[name="option"]').forEach(cb => cb.disabled = true);
+                        updateUI();
+                    });
+                }
+            }
+            
+            prevBtn.addEventListener('click', () => {
+                if (currentStep > 0) {
+                    currentStep--;
+                    renderStep();
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                if (attemptedSteps[currentStep]) {
+                    if (currentStep < steps.length - 1) {
+                        currentStep++;
+                        renderStep();
+                    } else {
+                        tutorContent.innerHTML = `
+                            <h2 class="text-3xl font-bold text-green-600 text-center">Tutorial Complete!</h2>
+                            <p class="text-gray-600 text-center mt-4">You have finished all the scenarios. Your final score is <strong>${score} out of ${steps.length}</strong>.</p>
+                            <p class="text-gray-500 text-center mt-2 text-sm">You can now submit this result to your teacher.</p>
+                        `;
+                        prevBtn.classList.remove('btn-secondary');
+                        prevBtn.classList.add('btn-disabled');
+                        prevBtn.disabled = true;
+                        nextBtn.textContent = 'Submitted!';
+                        nextBtn.classList.add('btn-disabled');
+                        nextBtn.disabled = true;
+                    }
+                }
+            });
+
+            renderStep();
+        });
+    </script>
+</body>
+</html>

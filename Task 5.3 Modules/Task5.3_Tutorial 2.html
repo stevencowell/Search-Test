@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task 5 Joinery Interactive Learning Module</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Craftsman Blue -->
+    <!-- Application Structure Plan: The SPA is a three-step interactive quiz, mirroring the three parts of the Task 5 observation assessment (Planning, Activities, Cleanup). This sequential structure guides the student through the process logically. The user flow is: 1) Read the context for the stage. 2) Read a concise theory note. 3) Answer a multiple-choice question based on the theory. 4) Click 'Check Answer' for instant feedback. 5) The 'Next' button unlocks, ensuring engagement. This enhanced format with preceding theory notes is ideal for reinforcing knowledge before testing application. -->
+    <!-- Visualization & Content Choices: The report's three joinery observation checklists are transformed into a three-part interactive quiz with integrated theory. Goal: To teach and assess understanding of a complex practical process. Method: A multi-step quiz app built with HTML/CSS/JS. Interaction: The user reads the theory, selects an answer, and receives immediate feedback. Justification: This active-recall format, supported by just-in-time theory, provides a robust learning experience, building confidence before the live assessment by testing decision-making in key joinery scenarios. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .tutor-container {
+            background-color: #FFFFFF;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1);
+        }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+        .btn-primary {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+        .btn-secondary {
+            background-color: #6B7280;
+            color: white;
+            border-color: #6B7280;
+        }
+        .btn-secondary:hover {
+            background-color: #4B5563;
+        }
+        .btn-disabled {
+            background-color: #E5E7EB;
+            color: #9CA3AF;
+            cursor: not-allowed;
+            border-color: #D1D5DB;
+        }
+        .progress-bar-fill {
+            background-color: #3b82f6;
+            transition: width 0.5s ease-in-out;
+        }
+        .question-option {
+            display: block;
+            padding: 0.75rem 1rem;
+            border: 2px solid #D1D5DB;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .question-option:hover {
+            border-color: #9CA3AF;
+        }
+        .question-option.selected {
+            border-color: #3b82f6;
+            background-color: #EFF6FF;
+        }
+        .feedback {
+            border-left-width: 4px;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 0.25rem;
+        }
+        .feedback-correct {
+            background-color: #D1FAE5;
+            border-color: #10B981;
+            color: #065F46;
+        }
+        .feedback-incorrect {
+            background-color: #FEE2E2;
+            border-color: #EF4444;
+            color: #991B1B;
+        }
+        .theory-box {
+            background-color: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div class="tutor-container w-full max-w-3xl">
+        <div class="p-6 sm:p-8" id="tutor-content">
+            <!-- Step content will be injected here -->
+        </div>
+
+        <div class="bg-gray-50 px-6 sm:px-8 py-4 border-t border-gray-200 rounded-b-2xl">
+            <div class="flex justify-between items-center mb-4">
+                <button id="prev-btn" class="btn btn-secondary">Previous</button>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-blue-600">Task 5 Progress</div>
+                    <div class="text-xs text-gray-500">Part <span id="progress-text">1 of 3</span></div>
+                </div>
+                <button id="next-btn" class="btn btn-primary">Next</button>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                <div id="progress-bar" class="progress-bar-fill h-2.5 rounded-full" style="width: 33.3%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const steps = [
+                {
+                    title: "Part A: Planning for Joinery",
+                    instruction: "Before starting any practical work, you must demonstrate that you can plan the job safely and effectively. Read the concepts below and answer the questions to test your knowledge.",
+                    questions: [
+                        {
+                            theory: "<strong>Key Concept:</strong> Safe Operating Procedures (SOPs) and manufacturer's manuals provide specific instructions for a tool, including safety features, pre-start checks, and limitations. These are the most detailed safety documents for any given piece of equipment.",
+                            q: "You're about to use a router for the first time. Which document is the MOST important to read before you turn it on?",
+                            options: ["The project plans", "The JSA you wrote", "The manufacturer's operator manual", "The materials list"],
+                            correctAnswer: 2,
+                            feedback: "Correct! While all documents are important, the manufacturer's manual contains specific safety warnings, operating instructions, and pre-start checks for that exact tool."
+                        },
+                        {
+                            theory: "<strong>Key Concept:</strong> The Hierarchy of Hazard Control ranks safety measures from most to least effective. The most effective control is <strong>Elimination</strong>, which means removing the hazard completely.",
+                            q: "You inspect your worksite and notice a pile of offcuts creating a trip hazard. What level of hazard control are you applying when you clean them up?",
+                            options: ["Elimination", "Substitution", "Engineering", "PPE"],
+                            correctAnswer: 0,
+                            feedback: "That's right! By completely removing the hazard, you are using the most effective control: Elimination."
+                        },
+                        {
+                            theory: "<strong>Key Concept:</strong> Project plans include a 'Parts List' or 'Materials List' that specifies the exact material to be used for each component, including its type and thickness.",
+                            q: "According to the plans for the Carcass Unit, what type of material is specified for the main body?",
+                            options: ["Solid Pine", "3mm Plywood", "16mm Melamine", "MDF"],
+                            correctAnswer: 2,
+                            feedback: "Correct. The parts list and drawings for the Carcass Unit specify 16mm White Melamine for the sides, top, base, and door."
+                        }
+                    ]
+                },
+                {
+                    title: "Part B: Joinery Activities",
+                    instruction: "This section tests your knowledge of the practical steps for making the joinery projects. Read each concept and choose the best action.",
+                     questions: [
+                        {
+                            theory: "<strong>Key Concept:</strong> A 'dry-fit' or 'dry assembly' is the process of putting components together without any glue or permanent fasteners. This allows you to check the quality of the joints and ensure everything fits correctly before final assembly.",
+                            q: "You have cut all the mortises and tenons for your multi-panelled door. What is the essential next step BEFORE you apply any glue?",
+                            options: ["Start gluing immediately", "Package the door for storage", "Do a 'dry-fit' assembly without glue", "Sand all the components"],
+                            correctAnswer: 2,
+                            feedback: "Exactly! A 'dry-fit' allows you to check that all the joints fit perfectly. It's much easier to fix a problem before the glue is applied."
+                        },
+                        {
+                            theory: "<strong>Key Concept:</strong> A final quality check on an assembled unit involves checking for geometric accuracy. This means ensuring it is 'square' (all corners are 90 degrees), free of 'wind' (not twisted), and that its overall dimensions match the plans.",
+                            q: "When checking your final assembled carcass unit for quality, what are you looking for?",
+                            options: ["That it is the right color", "That it is square, free of 'wind' (twists), and matches the plan's dimensions", "That it has enough nails", "That it feels heavy enough"],
+                            correctAnswer: 1,
+                            feedback: "Correct. A quality check involves ensuring the unit is geometrically accurate (square and not twisted) and matches the specifications on the project plans."
+                        },
+                        {
+                            theory: "<strong>Key Concept:</strong> A door jamb must line the entire thickness of the wall opening. This includes the structural timber frame plus the thickness of the wall lining (e.g., plasterboard) on both sides.",
+                            q: "For the Door Frame and Jamb project, the plans state the jamb width must suit 12mm plasterboard. If the wall frame is 70mm timber, what should the final jamb width be?",
+                            options: ["70mm", "82mm", "94mm", "100mm"],
+                            correctAnswer: 2,
+                            feedback: "That's right! The jamb must cover the 70mm frame PLUS the thickness of the plasterboard on both sides (70mm + 12mm + 12mm = 94mm)."
+                        }
+                    ]
+                },
+                {
+                    title: "Part C: Cleanup",
+                    instruction: "A professional finishes the job by cleaning up properly. Answer the questions below about the correct cleanup procedure.",
+                    questions: [
+                        {
+                            theory: "<strong>Key Concept:</strong> Resource efficiency in construction involves minimizing waste. This means sorting materials so that usable offcuts can be saved for future projects, recyclable materials can be processed, and only true waste is disposed of.",
+                            q: "You have several timber offcuts. What is the most resource-efficient way to deal with them?",
+                            options: ["Put them all in the general waste bin", "Leave them on the floor", "Separate the usable pieces for a future project and dispose of the rest", "Burn them to keep warm"],
+                            correctAnswer: 2,
+                            feedback: "That's the best practice. Resource efficiency means reusing materials where possible to reduce waste."
+                        },
+                        {
+                            theory: "<strong>Key Concept:</strong> The most critical safety step before performing any maintenance, adjustment, or cleaning on a power tool is to isolate it from its power source to prevent accidental start-up.",
+                            q: "What is the very first thing you should do before cleaning any power tool, like wiping sawdust off a circular saw?",
+                            options: ["Wipe it with a damp cloth", "Check the blade for sharpness", "Unplug it from the power source or remove the battery", "Put it back on the shelf"],
+                            correctAnswer: 2,
+                            feedback: "Absolutely critical! You must always isolate the tool from its power source before performing any cleaning or maintenance to prevent accidental start-up."
+                        }
+                    ]
+                }
+            ];
+
+            let currentStep = 0;
+            let questionIndex = 0;
+            let answered = false;
+
+            const tutorContent = document.getElementById('tutor-content');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+
+            function renderQuestion() {
+                const step = steps[currentStep];
+                const question = step.questions[questionIndex];
+                
+                let optionsHTML = question.options.map((option, index) => `
+                    <label class="question-option" for="option-${index}">
+                        <input type="radio" id="option-${index}" name="q_option" value="${index}" class="mr-3 h-4 w-4 accent-blue-500">
+                        <span>${option}</span>
+                    </label>
+                `).join('');
+
+                tutorContent.innerHTML = `
+                    <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">${step.title}</h2>
+                    <p class="text-gray-600 mb-4">${step.instruction}</p>
+                    <div class="mt-6 p-5 border border-gray-200 rounded-lg bg-white">
+                        <div class="theory-box">
+                            <p class="font-semibold text-gray-700">Key Concept:</p>
+                            <p class="text-sm text-gray-600 mt-1">${question.theory}</p>
+                        </div>
+                        <h3 class="font-semibold text-gray-700 mb-3">Question ${questionIndex + 1} of ${step.questions.length}:</h3>
+                        <p class="text-gray-800 mb-4">${question.q}</p>
+                        <div class="space-y-3">${optionsHTML}</div>
+                        <button id="check-answer-btn" class="btn btn-primary w-full mt-6">Check Answer</button>
+                        <div id="feedback-area" class="mt-4"></div>
+                    </div>
+                `;
+                updateUI();
+                attachEventListeners();
+            }
+
+            function updateUI() {
+                progressText.textContent = `${currentStep + 1} of ${steps.length}`;
+                progressBar.style.width = `${((currentStep + 1) / steps.length) * 100}%`;
+                
+                prevBtn.disabled = currentStep === 0 && questionIndex === 0;
+                prevBtn.classList.toggle('btn-disabled', currentStep === 0 && questionIndex === 0);
+                
+                nextBtn.disabled = !answered;
+                nextBtn.classList.toggle('btn-disabled', !answered);
+
+                if (currentStep === steps.length - 1 && questionIndex === steps[currentStep].questions.length - 1) {
+                    nextBtn.textContent = 'Finish';
+                } else {
+                    nextBtn.textContent = 'Next';
+                }
+            }
+
+            function attachEventListeners() {
+                const checkBtn = document.getElementById('check-answer-btn');
+                const optionLabels = document.querySelectorAll('.question-option');
+
+                optionLabels.forEach(label => {
+                    label.addEventListener('click', () => {
+                        if (checkBtn.disabled) return;
+                        optionLabels.forEach(l => l.classList.remove('selected'));
+                        label.classList.add('selected');
+                        label.querySelector('input').checked = true;
+                    });
+                });
+
+                if (checkBtn) {
+                    checkBtn.addEventListener('click', () => {
+                        const step = steps[currentStep];
+                        const question = step.questions[questionIndex];
+                        const feedbackArea = document.getElementById('feedback-area');
+                        const selectedRadio = document.querySelector('input[name="q_option"]:checked');
+
+                        if (!selectedRadio) {
+                            feedbackArea.innerHTML = `<div class="feedback feedback-incorrect"><p class="font-bold">Please select an answer.</p></div>`;
+                            return;
+                        }
+
+                        const userAnswer = parseInt(selectedRadio.value);
+                        answered = true;
+
+                        if (userAnswer === question.correctAnswer) {
+                            feedbackArea.innerHTML = `<div class="feedback feedback-correct"><h5 class="font-bold">Correct!</h5><p class="mt-2">${question.feedback}</p></div>`;
+                        } else {
+                            feedbackArea.innerHTML = `<div class="feedback feedback-incorrect"><h5 class="font-bold">Not quite.</h5><p class="mt-2">${question.feedback}</p></div>`;
+                        }
+                        
+                        checkBtn.disabled = true;
+                        checkBtn.classList.add('btn-disabled');
+                        updateUI();
+                    });
+                }
+            }
+            
+            prevBtn.addEventListener('click', () => {
+                if (questionIndex > 0) {
+                    questionIndex--;
+                } else if (currentStep > 0) {
+                    currentStep--;
+                    questionIndex = steps[currentStep].questions.length - 1;
+                }
+                answered = false;
+                renderQuestion();
+            });
+
+            nextBtn.addEventListener('click', () => {
+                if (answered) {
+                    if (questionIndex < steps[currentStep].questions.length - 1) {
+                        questionIndex++;
+                    } else if (currentStep < steps.length - 1) {
+                        currentStep++;
+                        questionIndex = 0;
+                    } else {
+                        tutorContent.innerHTML = `
+                            <h2 class="text-3xl font-bold text-green-600 text-center">Task 5 Learning Module Complete!</h2>
+                            <p class="text-gray-600 text-center mt-4">You have reviewed all the key concepts for the joinery observation. You are now better prepared to demonstrate these skills to your teacher.</p>
+                        `;
+                        prevBtn.classList.add('btn-disabled');
+                        prevBtn.disabled = true;
+                        nextBtn.textContent = 'Done!';
+                        nextBtn.classList.add('btn-disabled');
+                        nextBtn.disabled = true;
+                        return;
+                    }
+                    answered = false;
+                    renderQuestion();
+                }
+            });
+
+            renderQuestion();
+        });
+    </script>
+</body>
+</html>

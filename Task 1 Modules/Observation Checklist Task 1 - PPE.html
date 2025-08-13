@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task 1 PPE Checklist Tutor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Safety Green -->
+    <!-- Application Structure Plan: This SPA is a simple, single-step interactive checklist. This structure was chosen because the Task 1 observation is a single, focused activity (fitting PPE). A multi-step process would be overly complex. The user flow is straightforward: 1) Read the requirement. 2) Review the four PPE items. 3) Click the expandable 'Tutor's Tip' for fitting advice. 4) Check off each item as they practise. 5) A completion message appears when all items are checked. This is the most direct and user‑friendly way to present this specific assessment requirement. -->
+    <!-- Visualization & Content Choices: The report's single observation checklist is transformed into one interactive module. Goal: Guide and confirm understanding of a practical skill. Method: An interactive checklist built with HTML/CSS/JS. Interaction: The user checks boxes to track their practice. A <details> element provides optional tips. A dynamic message appears on completion. Justification: This provides a clear, focused tool for students to practise a critical, hands‑on safety skill and self‑assess their readiness for the observation. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0fdf4; /* Light green background */
+        }
+        .tutor-container {
+            background-color: #FFFFFF;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1);
+        }
+        .option-label {
+            display: block;
+            padding: 0.75rem 1rem;
+            border: 2px solid #D1D5DB;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-label:hover {
+            border-color: #9CA3AF;
+        }
+        .option-label.completed {
+            border-color: #10B981;
+            background-color: #D1FAE5;
+            text-decoration: line-through;
+            color: #065F46;
+        }
+        #completion-message {
+            transition: opacity 0.5s ease-in-out;
+        }
+        details > summary {
+            list-style: none;
+            cursor: pointer;
+        }
+        details > summary::-webkit-details-marker {
+            display: none;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div class="tutor-container w-full max-w-xl">
+        <div class="p-6 sm:p-8">
+            <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">Task 1: PPE Observation Checklist</h2>
+            <p class="text-gray-600 mb-6">For this task, you must demonstrate to your teacher that you can correctly select, fit, and adjust all the mandatory PPE. Check off each item below as you practise.</p>
+            
+            <details class="bg-gray-100 rounded-lg mb-6 border border-gray-200">
+                <summary class="p-4 flex justify-between items-center font-semibold text-gray-700 cursor-pointer">
+                    <span>💡 Tutor's Fitting Tips</span>
+                    <svg class="w-5 h-5 transition-transform transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </summary>
+                <div class="p-4 border-t border-gray-200 text-sm text-gray-600 space-y-2">
+                    <p><strong>Hard Hat:</strong> Adjust the internal harness so it's snug on your head. It shouldn't be loose or fall off when you bend over.</p>
+                    <p><strong>Eye Protection:</strong> Safety glasses should fit closely to your face, protecting you from the front and sides.</p>
+                    <p><strong>Hearing Protection:</strong> Earmuffs must form a complete seal around your ears. For earplugs, roll them tight and insert them fully.</p>
+                    <p><strong>Hi-Vis Clothing:</strong> This must be your outermost layer of clothing to ensure you are always visible to others.</p>
+                </div>
+            </details>
+
+            <div id="checklist-container" class="space-y-3">
+                <!-- Checklist items will be injected here -->
+            </div>
+            
+            <div id="completion-message" class="mt-6 p-4 text-center bg-green-100 text-green-800 rounded-lg opacity-0">
+                <p class="font-bold">All items checked! You're ready for your observation.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const checklistItems = [
+                "Eye Protection",
+                "Hearing Protection",
+                "Hard Hat",
+                "High-Visibility Clothing"
+            ];
+
+            const checklistContainer = document.getElementById('checklist-container');
+            const completionMessage = document.getElementById('completion-message');
+
+            function renderChecklist() {
+                let checklistHTML = checklistItems.map((item, index) => `
+                    <label class="option-label" for="item-${index}">
+                        <input type="checkbox" id="item-${index}" name="checklist-item" value="${index}" class="mr-3 h-5 w-5 accent-green-600">
+                        <span class="flex-grow">${item}</span>
+                    </label>
+                `).join('');
+                checklistContainer.innerHTML = checklistHTML;
+                attachEventListeners();
+            }
+
+            function checkCompletion() {
+                const allChecked = document.querySelectorAll('input[name="checklist-item"]:checked').length === checklistItems.length;
+                if (allChecked) {
+                    completionMessage.style.opacity = '1';
+                } else {
+                    completionMessage.style.opacity = '0';
+                }
+            }
+
+            function attachEventListeners() {
+                const checkboxes = document.querySelectorAll('input[name="checklist-item"]');
+                checkboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', () => {
+                        checkbox.parentElement.classList.toggle('completed', checkbox.checked);
+                        checkCompletion();
+                    });
+                });
+                
+                const detailsElement = document.querySelector('details');
+                if (detailsElement) {
+                    detailsElement.addEventListener('toggle', function() {
+                        const summary = this.querySelector('summary');
+                        const arrow = summary.querySelector('svg');
+                        if (this.open) {
+                            arrow.style.transform = 'rotate(180deg)';
+                        } else {
+                            arrow.style.transform = 'rotate(0deg)';
+                        }
+                    });
+                }
+            }
+
+            renderChecklist();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Task 6 Observation Tutor – Project Planning</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body{background:#f3f5fa;font-family:system-ui,Roboto,sans-serif}
+  .card{max-width:64rem;margin:auto;background:#fff;border-radius:1rem;
+        box-shadow:0 8px 24px rgba(0,0,0,.08);overflow:hidden}
+  .btn{padding:.55rem 1.3rem;font-weight:600;border-radius:.375rem;transition:.2s}
+  .btn-blue{background:#2563eb;color:#fff}.btn-blue:hover{background:#1e4ed8}
+  .btn-grey{background:#6b7280;color:#fff}.btn-grey:hover{background:#4b5563}
+  .btn[disabled]{background:#cbd5e1!important;cursor:not-allowed}
+  .progress-bg{height:.5rem;background:#e2e8f0;border-radius:.375rem}
+  .progress-fill{height:100%;background:#2563eb;width:0;transition:width .3s}
+  textarea{width:100%;border:2px solid #cbd5e1;border-radius:.375rem;
+           padding:1rem;font-size:1rem;resize:vertical}
+  textarea:focus{outline:none;border-color:#2563eb}
+  details summary{cursor:pointer;font-weight:600}
+  details[open] summary svg{transform:rotate(180deg)}
+</style>
+</head>
+<body class="p-4">
+
+<div class="card">
+  <!-- main panel -->
+  <div class="p-8" id="panel"></div>
+
+  <!-- nav -->
+  <div class="bg-slate-50 border-t border-slate-200 px-8 py-4 flex flex-col gap-4">
+    <div class="flex justify-between items-center">
+      <button id="prev" class="btn btn-grey">Previous</button>
+      <div class="font-semibold text-blue-700">
+        Scenario <span id="stepNow"></span>/<span id="stepTotal"></span>
+      </div>
+      <button id="next" class="btn btn-blue">Next</button>
+    </div>
+    <div class="progress-bg"><div id="bar" class="progress-fill"></div></div>
+  </div>
+</div>
+
+<!-- ===== Templates ===== -->
+<template id="tpl">
+<section>
+  <h2 class="text-2xl font-bold text-slate-800 mb-2 title"></h2>
+  <p class="mb-6 text-slate-600 desc"></p>
+
+  <details class="mb-6 bg-blue-50 border border-blue-200 rounded-lg">
+    <summary class="p-4 flex justify-between items-center text-blue-800">
+      <span>💡 Tutor Tip</span>
+      <svg class="w-4 h-4 transition-transform" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.25 8.29a.75.75 0 01-.02-1.08z" clip-rule="evenodd"/>
+      </svg>
+    </summary>
+    <div class="p-4 border-t border-blue-100 text-blue-900 tip"></div>
+  </details>
+
+  <div class="space-y-6 qWrap"></div>
+
+  <details class="mt-6 stretch hidden">
+    <summary class="cursor-pointer font-medium text-blue-700">Stretch Question</summary>
+    <div class="mt-3">
+      <p class="mb-2 stretchQ"></p>
+      <button class="btn btn-grey revealStretch">Reveal</button>
+      <p class="hidden mt-2 modelStretch text-green-700 bg-green-100 border-l-4 border-green-500 p-2 rounded"></p>
+    </div>
+  </details>
+</section>
+</template>
+
+<template id="qTpl">
+<div>
+  <p class="font-medium mb-1 qText"></p>
+  <textarea rows="3" class="answer mb-2"></textarea>
+  <button class="btn btn-grey reveal">Reveal</button>
+  <p class="hidden mt-2 model text-green-700 bg-green-100 border-l-4 border-green-500 p-2 rounded"></p>
+</div>
+</template>
+
+<script>
+/* -------- Scenario Data -------- */
+const data=[
+
+/* Scenario 1 */
+{
+  title:'🔧 Scenario 1 – Reporting an Inconsistency',
+  desc:'You notice a timber wall frame has been installed 150 mm too far forward compared to the floor plan. The bricklayer is arriving soon.',
+  tip:'Stop work, confirm the error on the drawing, notify the supervisor, and provide clear evidence.',
+  qs:[
+    {q:'What should you do as soon as you notice the error?',a:'Stop work, notify the supervisor, and double-check the plan details.'},
+    {q:'Who should you report the error to, and what should you show them?',a:'Report to the site supervisor or leading hand; show the floor plan and your measurements.'},
+    {q:'Why is it important to report this before the next trade arrives?',a:'To prevent mistakes, wasted time, and potential safety risks.'}
+  ],
+  stretch:{q:'Write down what you might say when reporting the error.',a:'“I’ve measured the wall 150 mm off the plan line. Can we pause work and confirm the correct position before the bricklayer starts?”'}
+},
+
+/* Scenario 2 */
+{
+  title:'🧰 Scenario 2 – Construction Planning Meeting',
+  desc:'You’re part of a toolbox talk about starting a deck extension. The team is reviewing timing and job roles.',
+  tip:'Arrive prepared, ask clarifying questions, and confirm who is doing what and when.',
+  qs:[
+    {q:'What’s one question you could ask to help clarify your task for the day?',a:'“What part of the job am I starting?”'},
+    {q:'What two things should you bring or know before a planning meeting?',a:'Job plans and PPE, plus an understanding of the job brief.'},
+    {q:'Why is it important for everyone to understand their job role during a meeting?',a:'It avoids confusion, increases safety, and helps the job finish on time.'}
+  ],
+  stretch:{q:'Give an example of something that might cause confusion if not discussed in a planning meeting.',a:'Material deliveries arriving at the wrong time could cause confusion.'}
+},
+
+/* Scenario 3 */
+{
+  title:'🔧 Scenario 3 – Tool Availability & Serviceability',
+  desc:'You’re asked to check if the circular saw is ready for use. You find the power lead is frayed and there’s no current tag.',
+  tip:'Tag out any unsafe tool immediately and record it before finding a safe replacement.',
+  qs:[
+    {q:'What should you do when you find the frayed lead?',a:'Tag the tool out, report it, and do not use it.'},
+    {q:'What is one thing you should check on any power tool before using it?',a:'Check the tag date, cable condition, or that the safety guard is in place.'},
+    {q:'Why is it important to check the tool register?',a:'To confirm it’s been tested and not already reported as faulty.'}
+  ],
+  stretch:{q:'Describe how you\'d tag out the tool so others know not to use it.',a:'Attach a red “Do Not Use” tag with the date and your initials.'}
+},
+
+/* Scenario 4 */
+{
+  title:'🧭 Scenario 4 – Orienting the Site Plan',
+  desc:'You have a laminated site plan to help set out a slab pour. You need to align it with the site using the north pointer and visible features.',
+  tip:'Use the north arrow and at least one fixed feature to align the plan correctly before set-out.',
+  qs:[
+    {q:'What does the north arrow on the plan help you do?',a:'Align the plan with real-world directions.'},
+    {q:'What’s one fixed feature you could use to help line up the plan on site?',a:'A boundary fence, driveway, power pole, or corner peg.'},
+    {q:'What should you do if you’re unsure the plan is facing the right way?',a:'Ask the supervisor, check other features, or use a compass.'}
+  ],
+  stretch:{q:'Why is it important to orient the plan before you start setting out?',a:'To avoid setting out elements in the wrong location.'}
+}
+
+];
+
+/* -------- DOM -------- */
+const panel=document.getElementById('panel');
+const prev=document.getElementById('prev');
+const next=document.getElementById('next');
+const bar=document.getElementById('bar');
+const stepNow=document.getElementById('stepNow');
+const stepTotal=document.getElementById('stepTotal');
+
+let idx=0;stepTotal.textContent=data.length;
+
+/* -------- Render -------- */
+function render(){
+  const s=data[idx];
+  /* Base template */
+  const frag=document.importNode(document.getElementById('tpl').content,true);
+  frag.querySelector('.title').innerHTML=s.title;
+  frag.querySelector('.desc').textContent=s.desc;
+  frag.querySelector('.tip').textContent=s.tip;
+
+  /* Questions */
+  const qWrap=frag.querySelector('.qWrap');
+  s.qs.forEach(obj=>{
+    const qDiv=document.importNode(document.getElementById('qTpl').content,true);
+    qDiv.querySelector('.qText').textContent=obj.q;
+    const model=qDiv.querySelector('.model');
+    model.textContent='Model: '+obj.a;
+    qDiv.querySelector('.reveal').onclick=()=>model.classList.toggle('hidden');
+    qWrap.appendChild(qDiv);
+  });
+
+  /* Stretch (optional) */
+  if(s.stretch){
+    const st=frag.querySelector('.stretch');
+    st.classList.remove('hidden');
+    st.querySelector('.stretchQ').textContent=s.stretch.q;
+    st.querySelector('.modelStretch').textContent=s.stretch.a;
+    st.querySelector('.revealStretch').onclick=e=>{
+      e.target.nextElementSibling.classList.remove('hidden');
+    };
+  }
+
+  panel.innerHTML='';
+  panel.appendChild(frag);
+
+  /* Nav status */
+  prev.disabled=idx===0;
+  next.disabled=idx===data.length-1;
+  prev.classList.toggle('btn-grey',idx>0);
+  next.textContent=idx===data.length-1?'Finish':'Next';
+  stepNow.textContent=idx+1;
+  bar.style.width=((idx+1)/data.length*100)+'%';
+}
+
+/* -------- Events -------- */
+prev.onclick=()=>{if(idx>0){idx--;render();}};
+next.onclick=()=>{if(idx<data.length-1){idx++;render();}};
+
+/* -------- Kick off -------- */
+render();
+</script>
+</body>
+</html>
