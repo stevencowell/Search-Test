@@ -62,11 +62,30 @@
     "Task 7 Modules/task7_index.html"
   ];
 
+  // Determine if we are on the Home page (root index.html)
+  function isHomePage() {
+    const path = window.location.pathname || '';
+    return /(?:^|\/)index\.html$/.test(path) || path === '/' || path === '';
+  }
+
+  // Add a class to <html> for page-context-specific styling
+  function applyPageContextClass() {
+    const root = document.documentElement;
+    if (isHomePage()) {
+      root.classList.add('is-home');
+      root.classList.remove('is-non-home');
+    } else {
+      root.classList.add('is-non-home');
+      root.classList.remove('is-home');
+    }
+  }
+
   function injectStyles() {
     if (document.getElementById('search-style')) return;
     const style = document.createElement('style');
     style.id = 'search-style';
     style.textContent = `
+      /* Base search UI */
       #search-container { text-align: center; margin: 2rem 0; }
       #search-input { padding: 0.5rem 1rem; border: 1px solid #ccc; border-radius: 4px; width: 60%; max-width: 320px; }
       #search-btn { padding: 0.5rem 1rem; margin-left: 0.5rem; background: #28a745; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
@@ -77,11 +96,30 @@
       .search-snippet { color: #4b5563; font-size: 0.95rem; }
       .muted { color: #6b7280; font-size: 0.9rem; }
       mark { background: #fff3cd; padding: 0 2px; border-radius: 2px; }
+
+      /* Non-home overrides: place search at top-right within header */
+      .is-non-home header { position: relative; }
+      .is-non-home #search-container {
+        position: absolute; top: 0.75rem; right: 0.75rem; margin: 0; text-align: right;
+      }
+      .is-non-home #search-input { width: 220px; max-width: 60vw; }
+      .is-non-home #search-results { margin-top: 1rem; }
+
+      @media (max-width: 640px) {
+        .is-non-home #search-input { width: 55vw; }
+      }
     `;
     document.head.appendChild(style);
   }
 
   function ensureSearchUI() {
+    const home = isHomePage();
+    // Decide where to place the search input and results
+    const header = document.querySelector('header');
+    const main = document.querySelector('main');
+    const containerMountTarget = home ? (main || document.body) : (header || main || document.body);
+    const resultsMountTarget = home ? (main || document.body) : (main || document.body);
+
     let container = document.getElementById('search-container');
     let input = document.getElementById('search-input');
     let btn = document.getElementById('search-btn');
@@ -90,49 +128,53 @@
     if (!container) {
       container = document.createElement('div');
       container.id = 'search-container';
+      // Place the container in the appropriate target (header for non-home)
+      if (containerMountTarget.firstChild) {
+        containerMountTarget.insertBefore(container, containerMountTarget.firstChild);
+      } else {
+        containerMountTarget.appendChild(container);
+      }
+    } else if (container.parentElement !== containerMountTarget) {
+      // If an existing container is mounted elsewhere, move it
+      container.parentElement.removeChild(container);
+      if (containerMountTarget.firstChild) {
+        containerMountTarget.insertBefore(container, containerMountTarget.firstChild);
+      } else {
+        containerMountTarget.appendChild(container);
+      }
+    }
 
+    if (!input) {
       input = document.createElement('input');
       input.id = 'search-input';
       input.type = 'text';
       input.placeholder = 'Enter keyword…';
+      container.appendChild(input);
+    }
 
+    if (!btn) {
       btn = document.createElement('button');
       btn.id = 'search-btn';
       btn.textContent = 'Search';
+      container.appendChild(btn);
+    }
 
+    if (!results) {
       results = document.createElement('div');
       results.id = 'search-results';
       results.setAttribute('aria-live', 'polite');
-
-      const main = document.querySelector('main');
-      const mountTarget = main || document.body;
-      if (mountTarget.firstChild) {
-        mountTarget.insertBefore(container, mountTarget.firstChild);
+      // Results always live in main/body, not inside header on non-home pages
+      if (resultsMountTarget.firstChild) {
+        resultsMountTarget.insertBefore(results, resultsMountTarget.firstChild);
       } else {
-        mountTarget.appendChild(container);
+        resultsMountTarget.appendChild(results);
       }
-      container.appendChild(input);
-      container.appendChild(btn);
-      mountTarget.insertBefore(results, container.nextSibling);
-    } else {
-      if (!input) {
-        input = document.createElement('input');
-        input.id = 'search-input';
-        input.type = 'text';
-        input.placeholder = 'Enter keyword…';
-        container.appendChild(input);
-      }
-      if (!btn) {
-        btn = document.createElement('button');
-        btn.id = 'search-btn';
-        btn.textContent = 'Search';
-        container.appendChild(btn);
-      }
-      if (!results) {
-        results = document.createElement('div');
-        results.id = 'search-results';
-        results.setAttribute('aria-live', 'polite');
-        container.insertAdjacentElement('afterend', results);
+    } else if (results.parentElement !== resultsMountTarget) {
+      results.parentElement.removeChild(results);
+      if (resultsMountTarget.firstChild) {
+        resultsMountTarget.insertBefore(results, resultsMountTarget.firstChild);
+      } else {
+        resultsMountTarget.appendChild(results);
       }
     }
 
@@ -245,11 +287,13 @@
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
+      applyPageContextClass();
       injectStyles();
       ensureSearchUI();
       attachHandlers();
     });
   } else {
+    applyPageContextClass();
     injectStyles();
     ensureSearchUI();
     attachHandlers();
